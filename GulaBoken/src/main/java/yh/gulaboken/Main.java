@@ -1,4 +1,4 @@
-package org.example;
+package yh.gulaboken;
 
 public class Main {
     public static void main(String[] args) {
