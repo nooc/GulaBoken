@@ -1,4 +1,4 @@
 package yh.gulaboken;
 
-public class Address {
+public interface IUser {
 }
