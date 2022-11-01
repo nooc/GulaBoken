@@ -2,11 +2,15 @@ package yh.gulaboken;
 
 import yh.gulaboken.models.Contact;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class MenuHandler {
+    private static List<String> ADD_ITEMS = new ArrayList<>(Arrays.asList(
+            "name","surname","age","phone","street","city","zip"
+    ));
     private final IAppContext context;
 
     /**
@@ -114,7 +118,7 @@ public class MenuHandler {
                 }
                 // create
                 var contact = new Contact();
-                var addr = contact.GetAddress();
+                var addr = contact.getAddress();
                 contact.setName(contactProperties.get("name"));
                 contact.setSurname(contactProperties.get("surname"));
                 contact.setAge(contactProperties.get("age"));
@@ -128,9 +132,11 @@ public class MenuHandler {
                 break;
             } else if (command.equals("cancel")) {
                 break;
-            } else if(commandLine.size() > 1) {
+            } else if(commandLine.size() > 1 && ADD_ITEMS.contains(command)) {
                 // has value
-
+                contactProperties.put(command, commandLine.get(1));
+            } else {
+                System.out.println("Invalid input.");
             }
         }
     }
@@ -162,7 +168,17 @@ public class MenuHandler {
             return getLine(0);
         }
 
-    private void printContact() {
-        //TODO: print contact
+    private void printContact(Contact contact) {
+        System.out.format("""
+                --- Contact ---
+                   Name: %s %s
+                    Age: %s
+                    Tel: %s
+                Address: %s
+                """,
+                contact.getName(), contact.getSurname(),
+                contact.getAge(),
+                contact.getTelephoneNumber(),
+                contact.getAddress());
     }
 }
