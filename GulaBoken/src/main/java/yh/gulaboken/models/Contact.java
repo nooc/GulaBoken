@@ -1,12 +1,21 @@
 package yh.gulaboken.models;
 
 public class Contact {
+    private long contactId;
     private String name;
     private String surname;
     private String age;
     private String telephoneNumber;
+    private Address address;
 
-    private long contactId;
+    public Contact() {
+        this.contactId = 0;
+        this.name = "";
+        this.surname = "";
+        this.age = "";
+        this.telephoneNumber = "";
+        this.address = new Address();
+    }
 
     public long getContactId() {
         return contactId;
@@ -48,4 +57,7 @@ public class Contact {
         this.telephoneNumber = telephoneNumber;
     }
 
+    public Address getAddress() {
+        return address;
+    }
 }

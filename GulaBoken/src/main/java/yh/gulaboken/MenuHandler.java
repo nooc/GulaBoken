@@ -1,6 +1,10 @@
 package yh.gulaboken;
 
+import yh.gulaboken.models.Contact;
+
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class MenuHandler {
     private final IAppContext context;
@@ -39,24 +43,28 @@ public class MenuHandler {
 
             // handle command
 
-            var command = getLine(); // read command
+            var commandLine = getLine(); // read command
+            var command = commandLine.get(0);
+            var size = commandLine.size();
 
-            if(command[0].equals("quit")) {
+            if(command.equals("quit")) {
                 return;
-            } else if (command[0].equals("search") && command.length > 1) {
-                search(Arrays.copyOfRange(command, 1, command.length));
-            } else if (command[0].equals("add")) {
+            } else if (command.equals("search") && size > 1) {
+                search(commandLine.subList(1,size));
+            } else if (command.equals("add")) {
                 addMenu();
-            } else if (command[0].equals("login") && command.length == 3) {
-                var user = context.getUserDatabase().authenticate(command[1],command[2]);
+            } else if (command.equals("login") && size == 3) {
+                // find authenticated user
+                var user = context.getUserDatabase().authenticate(commandLine.get(1),commandLine.get(2));
                 if(user==null) {
                     System.out.println("Login failed.");
                     continue;
                 }
+                // set session user
                 session.setUser(user);
                 System.out.format("User %s logged in.\n", user.getUsername());
             }
-            else if (command[0].equals("logout")) {
+            else if (command.equals("logout")) {
                 session.setUser(null);
             }
             else {
@@ -66,13 +74,72 @@ public class MenuHandler {
     }
 
     private void addMenu() {
+        var contactProperties = new HashMap<String,String>();
+        System.out.format("Yellow Book - Add Contact");
+        while(true) {
+            if (!contactProperties.isEmpty()) {
+                System.out.println("Current properties:");
+                for (var entry : contactProperties.entrySet()) {
+                    System.out.format("   $s: $s\n", entry.getKey(), entry.getValue());
+                }
+            }
+            System.out.format("""
+                    Commands:
+                        name <value>
+                        surname <value>
+                        age <value>
+                        phone <value> [<value> ...]
+                        street <value>
+                        city <value>
+                        zip <value>
+                        apply
+                        cancel
+                    > """);
+            var commandLine = getLine(1); // read command
+            var command = commandLine.get(0);
+
+            if(command.equals("apply")) {
+                // validate
+                if(!contactProperties.containsKey("name")) {
+                    System.out.println("Name is missing.");
+                    continue;
+                }
+                if(!contactProperties.containsKey("surname")) {
+                    System.out.println("Surname is missing.");
+                    continue;
+                }
+                if(!contactProperties.containsKey("phone")) {
+                    System.out.println("Phone numbers are missing.");
+                    continue;
+                }
+                // create
+                var contact = new Contact();
+                var addr = contact.GetAddress();
+                contact.setName(contactProperties.get("name"));
+                contact.setSurname(contactProperties.get("surname"));
+                contact.setAge(contactProperties.get("age"));
+                contact.setTelephoneNumber(contactProperties.get("phone"));
+                addr.setStreet(contactProperties.get("street"));
+                addr.setCity(contactProperties.get("city"));
+                addr.setZipCode(contactProperties.get("zip"));
+
+                contact = context.getContactDatabase().create(contact);
+                System.out.format("Created contact with id %d.\n", contact.getContactId());
+                break;
+            } else if (command.equals("cancel")) {
+                break;
+            } else if(commandLine.size() > 1) {
+                // has value
+
+            }
+        }
     }
 
-    private void search(String[] keywords) {
+    private void search(List<String> keywords) {
         var contacts = context.getContactDatabase().query(keywords);
-        if(contacts.length == 1) {
-            printContact(contacts[0]);
-        } else if (contacts.length > 1) {
+        if(contacts.size() == 1) {
+            printContact(contacts);
+        } else if (contacts.size() > 1) {
             for (var contact : contacts) {
                 System.out.format("%d: %s %s\n",
                         contact.getContactId(),
@@ -87,9 +154,13 @@ public class MenuHandler {
     }
 
 
-    private String[] getLine() {
-        return context.getScanner().nextLine().trim().split("\\s+");
+    private List<String> getLine(int splitLimit) {
+        var line= context.getScanner().nextLine().trim().split("\\s+", splitLimit);
+        return Arrays.stream(line).toList();
     }
+        private List<String> getLine() {
+            return getLine(0);
+        }
 
     private void printContact() {
         //TODO: print contact
