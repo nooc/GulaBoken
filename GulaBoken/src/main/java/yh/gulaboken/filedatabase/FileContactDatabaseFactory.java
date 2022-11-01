@@ -6,12 +6,7 @@ public class FileContactDatabaseFactory {
 
     private final String DEFAULT_DATABASE_FILE = "contacts.json";
 
-    private static IContactDatabase databaseSingleton = null;
-
-    public IContactDatabase getSingleton() {
-        if(databaseSingleton == null) {
-            databaseSingleton = new FileContactDatabase();
-        }
-        return databaseSingleton;
+    public static IContactDatabase create() {
+        return new FileContactDatabase();
     }
 }

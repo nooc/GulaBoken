@@ -19,7 +19,7 @@ public class Session implements ISession {
      * Initialize with DEFAULT_USER.
      */
     Session() {
-        this.currentUser = HardcodedUserDatabaseFactory.getSingleton().getUser(DEFAULT_USER);
+        setUser(null);
     }
 
     @Override
@@ -29,6 +29,10 @@ public class Session implements ISession {
 
     @Override
     public void setUser(IUser user) {
-        currentUser = user;
+        if(user == null) {
+            currentUser = HardcodedUserDatabaseFactory.getSingleton().getUser(DEFAULT_USER);
+        } else {
+            currentUser = user;
+        }
     }
 }

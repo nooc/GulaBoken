@@ -1,53 +1,26 @@
 package yh.gulaboken;
 
+import yh.gulaboken.filedatabase.FileContactDatabaseFactory;
 import yh.gulaboken.session.SessionFactory;
+import yh.gulaboken.userdatabase.HardcodedUserDatabaseFactory;
 
 import java.util.Scanner;
 
-public class Application {
-    private Scanner scanner;
+public class Application implements IAppContext {
+    private static IAppContext singleton;
+    private final Scanner scanner;
+    private final IUserDatabase userDatabase;
+    private final IContactDatabase contactDatabase;
+    private final ISession session;
 
     /**
      * Application constructor.
      */
     Application() {
         scanner = new Scanner(System.in);
-    }
-
-    private void mainMenu() {
-        var session = SessionFactory.getSingleton();
-        while(true) {
-            System.out.println("""
-                    Yellow Book - Main Menu
-                                    
-                    Commands:
-                        search <keywords>
-                        add
-                    """);
-            if(session.getUser().)
-                        login <username> <password>
-                        quit
-                    """);
-            var command = getLine();
-            if(command[0].equals("quit")) {
-                
-            } else if (command[0].equals("search") && command.length > 1) {
-                
-            } else if (command[0].equals("add")) {
-                
-            } else if (command[0].equals("login") && command.length == 3) {
-                
-                
-            }
-            else {
-                System.out.println("Invalid command.");
-            }
-        }
-    }
-
-
-    private String[] getLine() {
-        return scanner.nextLine().trim().split("\\s+");
+        userDatabase = HardcodedUserDatabaseFactory.create();
+        contactDatabase = FileContactDatabaseFactory.create();
+        session = SessionFactory.create();
     }
 
     /**
@@ -55,6 +28,26 @@ public class Application {
      * @param args
      */
     public static void main(String[] args) {
-        new Application().mainMenu();
+        new MenuHandler(new Application()).mainMenu();
+    }
+
+    @Override
+    public IContactDatabase getContactDatabase() {
+        return contactDatabase;
+    }
+
+    @Override
+    public IUserDatabase getUserDatabase() {
+        return userDatabase;
+    }
+
+    @Override
+    public ISession getSession() {
+        return session;
+    }
+
+    @Override
+    public Scanner getScanner() {
+        return scanner;
     }
 }
