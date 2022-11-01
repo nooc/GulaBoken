@@ -32,6 +32,6 @@ public interface IContactDatabase {
      * @param id
      * @return
      */
-    boolean delete(Contact id);
+    boolean delete(long id);
 
 }
