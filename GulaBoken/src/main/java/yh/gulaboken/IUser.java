@@ -1,5 +1,7 @@
 package yh.gulaboken;
 
 public interface IUser {
-    String getName();
+    String getUsername();
+
+    String getPasswordHash();
 }
