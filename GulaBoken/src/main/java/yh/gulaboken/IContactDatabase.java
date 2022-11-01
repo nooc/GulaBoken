@@ -2,6 +2,8 @@ package yh.gulaboken;
 
 import yh.gulaboken.models.Contact;
 
+import java.util.Collection;
+
 /**
  *
  */
@@ -34,4 +36,10 @@ public interface IContactDatabase {
      */
     boolean delete(long id);
 
+    /**
+     * Free text query contacts. Return relevant matches.
+     * @param keywords query keywords
+     * @return Collection
+     */
+    Collection<Contact> query(Collection<String> keywords);
 }
