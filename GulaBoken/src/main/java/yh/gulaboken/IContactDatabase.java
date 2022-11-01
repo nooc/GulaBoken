@@ -39,7 +39,15 @@ public interface IContactDatabase {
     /**
      * Free text query contacts. Return relevant matches.
      * @param keywords query keywords
-     * @return Collection
+     * @return List of contacts
      */
     List<Contact> query(List<String> keywords);
+
+    /**
+     * Query property of contacts. Return relevant matches.
+     * @param property property name
+     * @param query query string
+     * @return List of contacts
+     */
+    List<Contact> query(String property, String query);
 }

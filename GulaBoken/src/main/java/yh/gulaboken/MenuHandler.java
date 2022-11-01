@@ -35,8 +35,9 @@ public class MenuHandler {
                     Welcome %s.
                     
                     Commands:
-                        search <keywords>
-                        add
+                    freesearch KEYWORDS...
+                        search name|surname|street VALUE
+                           add
                     > """, session.getUser().getUsername());
             if(session.getUser().isAdmin()) {
                 System.out.println("    logout");
@@ -53,9 +54,12 @@ public class MenuHandler {
 
             if(command.equals("quit")) {
                 return;
-            } else if (command.equals("search") && size > 1) {
-                search(commandLine.subList(1,size));
-            } else if (command.equals("add")) {
+            } else if (command.equals("freesearch") && size > 1) {
+                freeSearch(commandLine.subList(1,size));
+            }
+            else if (command.equals("search") && size == 2) {
+                search(command, commandLine.get(1));
+            }else if (command.equals("add")) {
                 addMenu();
             } else if (command.equals("login") && size == 3) {
                 // find authenticated user
@@ -141,10 +145,36 @@ public class MenuHandler {
         }
     }
 
-    private void search(List<String> keywords) {
+    /**
+     * Search over specific property in contacts.
+     * @param property search property name
+     * @param value query string
+     */
+    private void search(String property, String query) {
+        // Query for contacts
+        var contacts = context.getContactDatabase().query(property, query);
+        // Handle results.
+        searchResultsMenu(contacts);
+    }
+
+    /**
+     * Free text search in contacts.
+     * @param keywords
+     */
+    private void freeSearch(List<String> keywords) {
+        // Query for contacts
         var contacts = context.getContactDatabase().query(keywords);
+        // Handle results.
+        searchResultsMenu(contacts);
+    }
+
+    /**
+     * Handle search results.
+     * @param contacts Search results
+     */
+    private void searchResultsMenu(List<Contact> contacts) {
         if(contacts.size() == 1) {
-            printContact(contacts);
+            printContact(contacts.get(1));
         } else if (contacts.size() > 1) {
             for (var contact : contacts) {
                 System.out.format("%d: %s %s\n",
@@ -160,7 +190,8 @@ public class MenuHandler {
     }
 
 
-    private List<String> getLine(int splitLimit) {
+
+        private List<String> getLine(int splitLimit) {
         var line= context.getScanner().nextLine().trim().split("\\s+", splitLimit);
         return Arrays.stream(line).toList();
     }
@@ -170,12 +201,13 @@ public class MenuHandler {
 
     private void printContact(Contact contact) {
         System.out.format("""
-                --- Contact ---
+                --- Contact id: %d ---
                    Name: %s %s
                     Age: %s
                     Tel: %s
                 Address: %s
                 """,
+                contact.getContactId(),
                 contact.getName(), contact.getSurname(),
                 contact.getAge(),
                 contact.getTelephoneNumber(),

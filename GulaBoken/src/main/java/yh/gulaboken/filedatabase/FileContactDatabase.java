@@ -96,9 +96,10 @@ class FileContactDatabase implements IContactDatabase {
     @Override
     public List<Contact> query(List<String> keywords) {
         ArrayList<Contact> found = new ArrayList<>();
-        for(var contact : )
-        for (var key: keywords) {
-
+        for(var contact : found) {
+            for (var key : keywords) {
+                //TODO: query
+            }
         }
         return found;
     }
