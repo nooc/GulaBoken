@@ -4,9 +4,16 @@ import yh.gulaboken.IUserDatabase;
 
 public class HardcodedUserDatabaseFactory {
 
+    /**
+     * HardcodedUserDatabase singleton.
+     */
     private static HardcodedUserDatabase userDatabaseSingleton = null;
 
-    public IUserDatabase getInstance() {
+    /**
+     *
+     * @return
+     */
+    public static IUserDatabase getSingleton() {
         if(userDatabaseSingleton == null) {
             userDatabaseSingleton = new HardcodedUserDatabase();
         }

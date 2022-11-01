@@ -28,6 +28,12 @@ class HardcodedUserDatabase implements IUserDatabase {
      */
     @Override
     public IUser getUser(String username) {
+        for (var user : users) {
+            if(user.getUsername().equals(username)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     /**
@@ -39,5 +45,10 @@ class HardcodedUserDatabase implements IUserDatabase {
      */
     @Override
     public IUser authenticate(String username, String password) {
+        var user = getUser(username);
+        if(user!=null && user.getPasswordHash().equals(User.calculatePasswordHash(password))) {
+            return user;
+        }
+        return null;
     }
 }

@@ -18,15 +18,8 @@ public class User implements IUser {
      */
     public User(String username, String password, boolean isAdmin) {
         this.username = username;
-        this.password = password;
+        this.password = calculatePasswordHash(password);
         this.isAdmin = isAdmin;
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(password.getBytes());
-            this.password = new String(digest.digest());
-        } catch (Exception ex) {
-            this.password = password;
-        }
     }
 
     /**
@@ -44,6 +37,21 @@ public class User implements IUser {
      */
     @Override
     public String getPasswordHash() {
+        return password;
+    }
+
+    @Override
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+
+    static String calculatePasswordHash(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(password.getBytes());
+            return new String(digest.digest());
+        } catch (Exception ex) {}
         return password;
     }
 }
