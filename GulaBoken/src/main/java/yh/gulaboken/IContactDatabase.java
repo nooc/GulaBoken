@@ -2,7 +2,7 @@ package yh.gulaboken;
 
 import yh.gulaboken.models.Contact;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -41,5 +41,5 @@ public interface IContactDatabase {
      * @param keywords query keywords
      * @return Collection
      */
-    Collection<Contact> query(Collection<String> keywords);
+    List<Contact> query(List<String> keywords);
 }
