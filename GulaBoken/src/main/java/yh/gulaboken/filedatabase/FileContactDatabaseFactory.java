@@ -8,6 +8,7 @@ public class FileContactDatabaseFactory {
 
     /**
      * Return database instance.
+     * @param dataFile Path to data file.
      * @return IContactDatabase
      */
     public static IContactDatabase create(File dataFile) {

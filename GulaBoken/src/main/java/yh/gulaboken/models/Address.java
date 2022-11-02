@@ -1,7 +1,5 @@
 package yh.gulaboken.models;
 
-import yh.gulaboken.StringUtil;
-
 import java.util.LinkedList;
 
 public class Address {
