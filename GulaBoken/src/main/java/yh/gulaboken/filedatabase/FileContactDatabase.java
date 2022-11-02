@@ -9,10 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -150,7 +147,7 @@ class FileContactDatabase implements IContactDatabase {
      */
     @Override
     public List<Contact> query(List<String> keywords) {
-        LinkedList<Contact> found = new LinkedList<>(); // result set
+        Set<Contact> found = new HashSet<>(); // result set
         // make lowercase
         var keywordsArray = keywords.toArray(new String[keywords.size()]);
         for(int i = 0; i<keywordsArray.length; ++i) {
@@ -168,7 +165,7 @@ class FileContactDatabase implements IContactDatabase {
                 }
             }
         }
-        return found;
+        return found.stream().toList();
     }
 
     /**
@@ -194,20 +191,21 @@ class FileContactDatabase implements IContactDatabase {
      */
     @Override
     public List<Contact> query(String property, String query) {
-        LinkedList<Contact> found = new LinkedList<>(); // result set
+        Set<Contact> found = new HashSet<>(); // result set
         var lowercaseQuery = query.toLowerCase();
         // query all contacts
         for(var contact : data.contactList) {
-            if(property.equals("name") && lowercaseQuery.contains(contact.getName().toLowerCase())) {
+
+            if(property.equals("name") && contact.getName().toLowerCase().contains(lowercaseQuery)) {
                 found.add(contact);
-            } else if (property.equals("surname") && lowercaseQuery.contains(contact.getSurname().toLowerCase())) {
+            } else if (property.equals("surname") && contact.getSurname().toLowerCase().contains(lowercaseQuery)) {
                 found.add(contact);
-            } else if (property.equals("street") && lowercaseQuery.contains(contact.getAddress().getStreet().toLowerCase())) {
+            } else if (property.equals("street") && contact.getAddress().getStreet().toLowerCase().contains(lowercaseQuery)) {
                 found.add(contact);
-            } else if (property.equals("phone") && lowercaseQuery.contains(contact.getTelephoneNumber())) {
+            } else if (property.equals("phone") && contact.getTelephoneNumber().contains(lowercaseQuery)) {
                 found.add(contact);
             }
         }
-        return found;
+        return found.stream().toList();
     }
 }
