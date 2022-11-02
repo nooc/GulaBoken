@@ -3,6 +3,7 @@ package yh.gulaboken.filedatabase;
 import yh.gulaboken.IContactDatabase;
 import yh.gulaboken.models.Contact;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,12 +11,14 @@ import java.util.List;
  *
  */
 class FileContactDatabase implements IContactDatabase {
+    private final File dataFile;
     private long idCounter = 0;
     private List<Contact> contactList;
     /**
      *
      */
-    FileContactDatabase(String filePath) {
+    FileContactDatabase(File dataFile) {
+        this.dataFile = dataFile;
         //TODO: read contactList from filePath, else create empty list.
 
         this.contactList = new ArrayList<>();
@@ -102,5 +105,10 @@ class FileContactDatabase implements IContactDatabase {
             }
         }
         return found;
+    }
+
+    @Override
+    public List<Contact> query(String property, String query) {
+        return null;
     }
 }

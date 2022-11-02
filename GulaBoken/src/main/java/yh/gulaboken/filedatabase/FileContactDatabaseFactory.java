@@ -2,11 +2,16 @@ package yh.gulaboken.filedatabase;
 
 import yh.gulaboken.IContactDatabase;
 
+import java.io.File;
+
 public class FileContactDatabaseFactory {
 
-    private final String DEFAULT_DATABASE_FILE = "contacts.json";
+    /**
+     * Return database instance.
+     * @return IContactDatabase
+     */
+    public static IContactDatabase create(File dataFile) {
 
-    public static IContactDatabase create() {
-        return new FileContactDatabase();
+        return new FileContactDatabase(dataFile);
     }
 }
