@@ -1,9 +1,12 @@
 package yh.gulaboken.filedatabase;
 
+import com.google.gson.Gson;
 import yh.gulaboken.IContactDatabase;
 import yh.gulaboken.models.Contact;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,18 +15,38 @@ import java.util.List;
  *
  */
 class FileContactDatabase implements IContactDatabase {
-    private final File dataFile;
-    private long idCounter = 0;
-    private List<Contact> contactList;
+
     /**
-     *
+     * Wrap data for easier json read/write.
+     */
+    private class DataWrapper {
+        long idCounter; // counter for handling unique contact ids
+        List<Contact> contactList; // list of contacts
+        DataWrapper() {
+            this.idCounter = 100;
+            this.contactList = new ArrayList<>();
+        }
+        long nextId() {
+            return idCounter += 1;
+        }
+    }
+
+    /**
+     * File backend
+     */
+    private final File dataFile;
+
+    private DataWrapper data;
+
+    /**
+     * Constructor
+     * Implementation of IContactDatabase with a file backend.
      */
     FileContactDatabase(File dataFile) {
         this.dataFile = dataFile;
 
-        //TODO: read contactList from filePath, else create empty list.
-
-        this.contactList = new ArrayList<>();
+        //TODO: read a DataWrapper instance from filePath, else create empty DataWrapper instance.
+        this.data = new DataWrapper();
     }
 
     /**
@@ -33,9 +56,8 @@ class FileContactDatabase implements IContactDatabase {
      */
     @Override
     public Contact create(Contact newContact) {
-        idCounter += 1;
-        newContact.setContactId(idCounter);
-        contactList.add(newContact);
+        newContact.setContactId(data.nextId());
+        data.contactList.add(newContact);
         writeToFile();
         return newContact;
     }
@@ -47,7 +69,7 @@ class FileContactDatabase implements IContactDatabase {
      */
     @Override
     public Contact read(long id) {
-        for(var contact : contactList){
+        for(var contact : data.contactList){
             if(contact.getContactId() == id){
                 return contact;
             }
@@ -94,7 +116,7 @@ class FileContactDatabase implements IContactDatabase {
         var contact = read (id);
         if(contact != null) {
             // found
-            contactList.remove(contact);
+            data.contactList.remove(contact);
             writeToFile();
             return true;
         }
@@ -109,6 +131,9 @@ class FileContactDatabase implements IContactDatabase {
     }
 
 
+    /**
+     * See {@link IContactDatabase}
+     */
     @Override
     public List<Contact> query(List<String> keywords) {
         ArrayList<Contact> found = new ArrayList<>(); // result set
@@ -116,7 +141,7 @@ class FileContactDatabase implements IContactDatabase {
         String[] lowerKeywords = (String[]) keywords.stream().map(keyword -> keyword.toLowerCase()).toArray();
         // query all contacts
 
-        for(var contact : contactList) {
+        for(var contact : data.contactList) {
             var haystack = getHaystack(contact);
             for (var entry : haystack) {
                 for (var key : lowerKeywords) {
@@ -155,7 +180,7 @@ class FileContactDatabase implements IContactDatabase {
         ArrayList<Contact> found = new ArrayList<>(); // result set
         var lowercaseQuery = query.toLowerCase();
         // query all contacts
-        for(var contact : contactList) {
+        for(var contact : data.contactList) {
             if(property.equals("name") && lowercaseQuery.contains(contact.getName().toLowerCase())) {
                 found.add(contact);
             } else if (property.equals("surname") && lowercaseQuery.contains(contact.getSurname().toLowerCase())) {

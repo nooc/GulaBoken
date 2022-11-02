@@ -2,10 +2,7 @@ package yh.gulaboken;
 
 import yh.gulaboken.models.Contact;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class MenuHandler {
     private static List<String> ADD_ITEMS = new ArrayList<>(Arrays.asList(
@@ -60,7 +57,7 @@ public class MenuHandler {
             else if (command.equals("search") && size == 2) {
                 search(command, commandLine.get(1));
             }else if (command.equals("add")) {
-                addMenu();
+                editMenu(null);
             } else if (command.equals("login") && size == 3) {
                 // find authenticated user
                 var user = context.getUserDatabase().authenticate(commandLine.get(1),commandLine.get(2));
@@ -81,9 +78,13 @@ public class MenuHandler {
         }
     }
 
-    private void addMenu() {
-        var contactProperties = new HashMap<String,String>();
-        System.out.println("Yellow Book - Add Contact");
+    /**
+     * Create or edit contact.
+     * @param contact Contact or null
+     */
+    private void editMenu(Contact contact) {
+        var contactProperties = getContactProperties(contact);
+        System.out.format("Yellow Book - %s Contact\n", contact==null ? "Create" : "Edit");
         while(true) {
             if (!contactProperties.isEmpty()) {
                 System.out.println("Current properties:");
@@ -120,20 +121,32 @@ public class MenuHandler {
                     System.out.println("Phone numbers are missing.");
                     continue;
                 }
-                // create
-                var contact = new Contact();
-                var addr = contact.getAddress();
-                contact.setName(contactProperties.get("name"));
-                contact.setSurname(contactProperties.get("surname"));
-                contact.setAge(contactProperties.get("age"));
-                contact.setTelephoneNumber(contactProperties.get("phone"));
+                // create / update
+                Contact contact2;
+                if(contact == null) {
+                    contact2 = new Contact();
+                } else {
+                    contact2 = contact;
+                }
+                var addr = contact2.getAddress();
+                contact2.setName(contactProperties.get("name"));
+                contact2.setSurname(contactProperties.get("surname"));
+                contact2.setAge(contactProperties.get("age"));
+                contact2.setTelephoneNumber(contactProperties.get("phone"));
                 addr.setStreet(contactProperties.get("street"));
                 addr.setCity(contactProperties.get("city"));
                 addr.setZipCode(contactProperties.get("zip"));
 
-                contact = context.getContactDatabase().create(contact);
-                System.out.format("Created contact with id %d.\n", contact.getContactId());
-                break;
+                if(contact == null) {
+                    contact2 = context.getContactDatabase().create(contact2);
+                    System.out.format("Created contact with id %d.\n", contact.getContactId());
+                    break;
+                } else if(context.getContactDatabase().update(contact2)) {
+                    System.out.format("Updated contact with id %d.\n", contact2.getContactId());
+                    break;
+                } else {
+                    System.out.format("%s failed\n", contact==null ? "Create" : "Update");
+                }
             } else if (command.equals("cancel")) {
                 break;
             } else if(commandLine.size() > 1 && ADD_ITEMS.contains(command)) {
@@ -143,6 +156,26 @@ public class MenuHandler {
                 System.out.println("Invalid input.");
             }
         }
+    }
+
+    /**
+     * Get contact properties as map.
+     * @param contact Contact
+     * @return Key value map.
+     */
+    private Map<String,String> getContactProperties(Contact contact) {
+        var properties = new HashMap<String,String>();
+        if(contact != null) {
+            var addr = contact.getAddress();
+            properties.put("name", contact.getName());
+            properties.put("surname", contact.getSurname());
+            properties.put("age", contact.getAge());
+            properties.put("phone", contact.getTelephoneNumber());
+            properties.put("street", addr.getStreet());
+            properties.put("city", addr.getCity());
+            properties.put("zip", addr.getZipCode());
+        }
+        return properties;
     }
 
     /**
@@ -206,7 +239,48 @@ public class MenuHandler {
             System.out.format("""
                         back
                     > """);
-            getLine(1)
+
+            var commandLine = getLine(1); // read command
+            var command = commandLine.get(0);
+            int contactId;
+
+            if(command.equals("back")) { break; }
+            else if(commandLine.size() == 2) {
+                try {
+                    contactId = Integer.parseInt(commandLine.get(1));
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                    continue;
+                }
+            } else {
+                // all commands except back take one id argument
+                System.out.println("Invalid parameters.");
+                continue;
+            }
+
+            if(context.getSession().getUser().isAdmin()) {
+                if(command.equals("update")) {
+                    for (var contact : contacts) {
+                        if(contact.getContactId()==contactId) {
+                            editMenu(contact);
+                        }
+                    }
+                } else if(command.equals("delete")) {
+                    for (var contact : contacts) {
+                        if(contact.getContactId()==contactId) {
+                            contacts.remove(contact);
+                            System.out.format("Removed contact %d.\n", contactId);
+                        }
+                    }
+                }
+            }
+            else if(command.equals("show")) {
+                for (var contact : contacts) {
+                    if(contact.getContactId()==contactId) {
+                        printContact(contact);
+                    }
+                }
+            }
         }
     }
 

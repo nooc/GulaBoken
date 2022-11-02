@@ -22,7 +22,7 @@ public class Application implements IAppContext {
         scanner = new Scanner(System.in);
         userDatabase = HardcodedUserDatabaseFactory.create();
         contactDatabase = FileContactDatabaseFactory.create(new File(FILE_DATABASE));
-        session = SessionFactory.create();
+        session = SessionFactory.create(userDatabase.getUser("guest"));
     }
 
     /**

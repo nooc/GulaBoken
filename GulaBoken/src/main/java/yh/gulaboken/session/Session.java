@@ -15,10 +15,16 @@ public class Session implements ISession {
     private IUser currentUser;
 
     /**
+     * Default user
+     */
+    private final IUser defaultUser;
+
+    /**
      * Constructor
      * Initialize with DEFAULT_USER.
      */
-    Session() {
+    Session(IUser defaultUser) {
+        this.defaultUser = defaultUser;
         setUser(null);
     }
 
@@ -30,7 +36,7 @@ public class Session implements ISession {
     @Override
     public void setUser(IUser user) {
         if(user == null) {
-            currentUser = HardcodedUserDatabaseFactory.getSingleton().getUser(DEFAULT_USER);
+            currentUser = defaultUser;
         } else {
             currentUser = user;
         }
