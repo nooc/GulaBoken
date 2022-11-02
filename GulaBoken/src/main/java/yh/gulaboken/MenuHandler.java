@@ -274,7 +274,13 @@ public class MenuHandler {
                 continue;
             }
 
-            if(context.getSession().getUser().isAdmin()) {
+            if(command.equals("show")) {
+                for (var contact : contacts) {
+                    if(contact.getContactId()==contactId) {
+                        printContact(contact);
+                    }
+                }
+            } else if(context.getSession().getUser().isAdmin()) {
                 if(command.equals("update")) {
                     for (var contact : contacts) {
                         if(contact.getContactId()==contactId) {
@@ -287,13 +293,6 @@ public class MenuHandler {
                             contacts.remove(contact);
                             System.out.format("Removed contact %d.\n", contactId);
                         }
-                    }
-                }
-            }
-            else if(command.equals("show")) {
-                for (var contact : contacts) {
-                    if(contact.getContactId()==contactId) {
-                        printContact(contact);
                     }
                 }
             }
