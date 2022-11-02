@@ -52,7 +52,7 @@ class FileContactDatabase implements IContactDatabase {
         try (FileReader fileReader = new FileReader(dataFile)) {
             Gson gson = new Gson();
             data = gson.fromJson(fileReader, dataType);
-        } catch (Exception e){
+        } catch (Exception e) {
             this.data = new DataWrapper();
         }
     }
