@@ -8,7 +8,7 @@ In this assignment we implemented a console application in Java by following the
 
 ## Project timeline
 
-Assign spans from 2022-10-31 to 2022-11-11. See [Gantt](https://funet-my.sharepoint.com/:x:/g/personal/yhmu22_brigbe_folkuniversitetet_nu/EYg-zcBuNsRJoNPP4Lg3ivsBLzBUOQvZsvwsrlJq6exdxQ?e=E2uBgg) on sharepoint.
+Assign spans from 2022-10-31 to 2022-11-11. See [Gantt](https://funet-my.sharepoint.com/:x:/g/personal/yhmu22_brigbe_folkuniversitetet_nu/EYg-zcBuNsRJoNPP4Lg3ivsB6WGiVKnSDK5YETkW8Z__3Q?e=23xoOA) on sharepoint.
 
 ## Usage
 
