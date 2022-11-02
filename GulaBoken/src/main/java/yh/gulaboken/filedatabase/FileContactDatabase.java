@@ -40,25 +40,21 @@ class FileContactDatabase implements IContactDatabase {
 
     private DataWrapper data;
 
+    private final Type dataType;
+
     /**
      * Constructor
      * Implementation of IContactDatabase with a file backend.
      */
     FileContactDatabase(File dataFile) {
         this.dataFile = dataFile;
-
-        //TODO: read a DataWrapper instance from filePath, else create empty DataWrapper instance.
-        this.data = new DataWrapper();
-        try (FileReader fileReader = new FileReader(dataFile)){
-            Type type = new TypeToken<DataWrapper>(){}.getType();
+        this.dataType = new TypeToken<DataWrapper>(){}.getType();
+        try (FileReader fileReader = new FileReader(dataFile)) {
             Gson gson = new Gson();
-            dataFile = gson.fromJson(fileReader, type);
-
+            data = gson.fromJson(fileReader, dataType);
         } catch (Exception e){
             this.data = new DataWrapper();
         }
-
-
     }
 
     /**
@@ -139,13 +135,9 @@ class FileContactDatabase implements IContactDatabase {
      * Write database to file.
      */
     private void writeToFile() {
-        // TODO: Write idCounter and contactList to json file.
         try (FileWriter fileWriter = new FileWriter(dataFile)){
-
             Gson gson = new Gson();
-            gson.toJson(data,fileWriter);
-
-
+            gson.toJson(data, dataType, fileWriter);
         } catch (Exception e){
             System.out.println("Error. Didn't write to file :D");
         }

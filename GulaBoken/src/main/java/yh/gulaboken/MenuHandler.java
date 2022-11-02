@@ -28,20 +28,21 @@ public class MenuHandler {
             // print menu
 
             System.out.format("""
+                    ----------------------------------------
                     Yellow Book - Main Menu
-                    Welcome %s.
-                    
-                    Commands:
-                    freesearch KEYWORDS...
-                        search name|surname|street VALUE
-                           add
-                    > """, session.getUser().getUsername());
+                        Hello %s
+                    ----------------------------------------
+                        COMMANDS
+                    freesearch KEYWORD...
+                    search "name"|"surname"|"street" VALUE
+                    add
+                    """, session.getUser().getUsername());
             if(session.getUser().isAdmin()) {
-                System.out.println("    logout");
+                System.out.println("logout");
             } else {
-                System.out.println("    login <username> <password>");
+                System.out.println("login USERNAME PASSWORD");
             }
-            System.out.println("    quit");
+            System.out.print("quit\n----------------------------------------\n> ");
 
             // handle command
 
@@ -54,8 +55,8 @@ public class MenuHandler {
             } else if (command.equals("freesearch") && size > 1) {
                 freeSearch(commandLine.subList(1,size));
             }
-            else if (command.equals("search") && size == 2) {
-                search(command, commandLine.get(1));
+            else if (command.equals("search") && size == 3) {
+                search(commandLine.get(1), commandLine.get(2));
             }else if (command.equals("add")) {
                 editMenu(null);
             } else if (command.equals("login") && size == 3) {
@@ -84,27 +85,36 @@ public class MenuHandler {
      */
     private void editMenu(Contact contact) {
         var contactProperties = getContactProperties(contact);
-        System.out.format("Yellow Book - %s Contact\n", contact==null ? "Create" : "Edit");
+        System.out.format("""
+            ----------------------------------------
+            Yellow Book - %s Contact
+                Hello %s
+            ----------------------------------------
+        """,
+                contact==null ? "Create" : "Edit",
+                context.getSession().getUser().getUsername());
         while(true) {
+            System.out.print("""
+                    COMMANDS
+                name VALUE
+                surname VALUE
+                age VALUE
+                phone VALUE...
+                street VALUE
+                city VALUE
+                zip VALUE
+                apply
+                cancel
+                ----------------------------------------
+                """);
             if (!contactProperties.isEmpty()) {
-                System.out.println("Current properties:");
                 for (var entry : contactProperties.entrySet()) {
-                    System.out.format("   $s: $s\n", entry.getKey(), entry.getValue());
+                    System.out.format("%s = %s\n", entry.getKey(), entry.getValue());
                 }
+                System.out.println("----------------------------------------");
             }
-            System.out.format("""
-                    Commands:
-                        name <value>
-                        surname <value>
-                        age <value>
-                        phone <value> [<value> ...]
-                        street <value>
-                        city <value>
-                        zip <value>
-                        apply
-                        cancel
-                    > """);
-            var commandLine = getLine(1); // read command
+            System.out.print("> ");
+            var commandLine = getLine(2); // read command
             var command = commandLine.get(0);
 
             if(command.equals("apply")) {
@@ -139,7 +149,7 @@ public class MenuHandler {
 
                 if(contact == null) {
                     contact2 = context.getContactDatabase().create(contact2);
-                    System.out.format("Created contact with id %d.\n", contact.getContactId());
+                    System.out.format("Created contact with id %d.\n", contact2.getContactId());
                     break;
                 } else if(context.getContactDatabase().update(contact2)) {
                     System.out.format("Updated contact with id %d.\n", contact2.getContactId());
@@ -210,11 +220,16 @@ public class MenuHandler {
             System.out.println("Nothing found.");
             return;
         }
-        System.out.println("Yellow Book - Search Results");
+        System.out.format("""
+        ----------------------------------------
+        Yellow Book - Search Results
+            Hello %s
+        ----------------------------------------
+        """, context.getSession().getUser().getUsername());
         while(true) {
             if (contacts.size() == 1) {
                 // if only one result, show it
-                printContact(contacts.get(1));
+                printContact(contacts.get(0));
             } else if (contacts.size() > 1) {
                 // if more than one result, show a simplified list of results
                 for (var contact : contacts) {
@@ -228,19 +243,20 @@ public class MenuHandler {
                 // no more results
                 break;
             }
-            System.out.format("""
-                    Commands:
-                        show <id>
-                    """);
-            if(context.getSession().getUser().isAdmin()) {
-                System.out.println("    update <id>");
-                System.out.println("    delete <id>");
+            System.out.println("    COMMANDS");
+            if(contacts.size() > 1) {
+                System.out.println("show ID");
             }
-            System.out.format("""
+            if(context.getSession().getUser().isAdmin()) {
+                System.out.println("update ID");
+                System.out.println("delete ID");
+            }
+            System.out.print("""
                         back
-                    > """);
+                        ----------------------------------------
+                        > """);
 
-            var commandLine = getLine(1); // read command
+            var commandLine = getLine(2); // read command
             var command = commandLine.get(0);
             int contactId;
 
@@ -295,17 +311,19 @@ public class MenuHandler {
         }
 
     private void printContact(Contact contact) {
+        var addressStr = contact.getAddress().toString();
         System.out.format("""
-                --- Contact id: %d ---
+                CONTACT %d
                    Name: %s %s
                     Age: %s
                     Tel: %s
-                Address: %s
                 """,
                 contact.getContactId(),
                 contact.getName(), contact.getSurname(),
                 contact.getAge(),
-                contact.getTelephoneNumber(),
-                contact.getAddress());
+                contact.getTelephoneNumber());
+        if(!addressStr.isEmpty()) {
+            System.out.format("Address: %s\n", addressStr);
+        }
     }
 }
