@@ -283,7 +283,7 @@ public class MenuHandler {
                     }
                 } else if(command.equals("delete")) {
                     for (var contact : contacts) {
-                        if(contact.getContactId()==contactId) {
+                        if(contact.getContactId() == contactId) {
                             contacts.remove(contact);
                             System.out.format("Removed contact %d.\n", contactId);
                         }

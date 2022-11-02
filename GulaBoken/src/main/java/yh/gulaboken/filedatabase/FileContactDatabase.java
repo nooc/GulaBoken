@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -149,15 +150,18 @@ class FileContactDatabase implements IContactDatabase {
      */
     @Override
     public List<Contact> query(List<String> keywords) {
-        ArrayList<Contact> found = new ArrayList<>(); // result set
+        LinkedList<Contact> found = new LinkedList<>(); // result set
         // make lowercase
-        String[] lowerKeywords = (String[]) keywords.stream().map(keyword -> keyword.toLowerCase()).toArray();
+        var keywordsArray = keywords.toArray(new String[keywords.size()]);
+        for(int i = 0; i<keywordsArray.length; ++i) {
+            keywordsArray[i] = keywordsArray[i].toLowerCase();
+        }
         // query all contacts
 
         for(var contact : data.contactList) {
             var haystack = getHaystack(contact);
             for (var entry : haystack) {
-                for (var key : lowerKeywords) {
+                for (var key : keywordsArray) {
                     if (entry.contains(key)) {
                         found.add(contact);
                     }
@@ -190,7 +194,7 @@ class FileContactDatabase implements IContactDatabase {
      */
     @Override
     public List<Contact> query(String property, String query) {
-        ArrayList<Contact> found = new ArrayList<>(); // result set
+        LinkedList<Contact> found = new LinkedList<>(); // result set
         var lowercaseQuery = query.toLowerCase();
         // query all contacts
         for(var contact : data.contactList) {

@@ -2,6 +2,8 @@ package yh.gulaboken.models;
 
 import yh.gulaboken.StringUtil;
 
+import java.util.LinkedList;
+
 public class Address {
     private String street;
     private String city;
@@ -43,12 +45,10 @@ public class Address {
      */
     @Override
     public String toString() {
-        var builder = new StringBuilder();
-        StringUtil.appendToBuilder(builder, street);
-        var zipCity = String.join(zipCode, city);
-        if(!zipCity.isEmpty()) {
-            StringUtil.appendToBuilder(builder, zipCity);
-        }
-        return builder.toString();
+        var addressItems = new LinkedList<String>();
+        if(!street.isEmpty())  { addressItems.add(street); }
+        if(!zipCode.isEmpty())  { addressItems.add(zipCode); }
+        if(!city.isEmpty())  { addressItems.add(city); }
+        return String.join(", ", addressItems);
     }
 }
