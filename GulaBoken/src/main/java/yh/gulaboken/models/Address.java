@@ -2,7 +2,7 @@ package yh.gulaboken.models;
 
 import java.util.LinkedList;
 
-public class Address {
+public class Address extends BaseModel{
     private String street;
     private String city;
     private String zipCode;
@@ -18,7 +18,7 @@ public class Address {
     }
 
     public void setStreet(String street) {
-        this.street = street;
+        this.street = nonNull(street);
     }
 
     public String getCity() {
@@ -26,7 +26,7 @@ public class Address {
     }
 
     public void setCity(String city) {
-        this.city = city;
+        this.city = nonNull(city);
     }
 
     public String getZipCode() {
@@ -34,7 +34,7 @@ public class Address {
     }
 
     public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
+        this.zipCode = nonNull(zipCode);
     }
 
     /**

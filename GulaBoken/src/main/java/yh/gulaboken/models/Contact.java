@@ -1,6 +1,6 @@
 package yh.gulaboken.models;
 
-public class Contact {
+public class Contact extends BaseModel{
     private long contactId;
     private String name;
     private String surname;
@@ -30,7 +30,7 @@ public class Contact {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = nonNull(name);
     }
 
     public String getSurname() {
@@ -38,7 +38,7 @@ public class Contact {
     }
 
     public void setSurname(String surname) {
-        this.surname = surname;
+        this.surname = nonNull(surname);
     }
 
     public String getAge() {
@@ -46,7 +46,7 @@ public class Contact {
     }
 
     public void setAge(String age) {
-        this.age = age;
+        this.age = nonNull(age);
     }
 
     public String getTelephoneNumber() {
@@ -54,7 +54,8 @@ public class Contact {
     }
 
     public void setTelephoneNumber(String telephoneNumber) {
-        this.telephoneNumber = telephoneNumber;
+
+        this.telephoneNumber = nonNull(telephoneNumber);
     }
 
     public Address getAddress() {
