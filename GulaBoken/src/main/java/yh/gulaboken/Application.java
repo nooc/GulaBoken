@@ -4,10 +4,11 @@ import yh.gulaboken.filedatabase.FileContactDatabaseFactory;
 import yh.gulaboken.session.SessionFactory;
 import yh.gulaboken.userdatabase.HardcodedUserDatabaseFactory;
 
+import java.io.File;
 import java.util.Scanner;
 
 public class Application implements IAppContext {
-    private static IAppContext singleton;
+    private static final String FILE_DATABASE = "contacts.json";
     private final Scanner scanner;
     private final IUserDatabase userDatabase;
     private final IContactDatabase contactDatabase;
@@ -15,11 +16,12 @@ public class Application implements IAppContext {
 
     /**
      * Application constructor.
+     * Initialize context.
      */
     Application() {
         scanner = new Scanner(System.in);
         userDatabase = HardcodedUserDatabaseFactory.create();
-        contactDatabase = FileContactDatabaseFactory.create();
+        contactDatabase = FileContactDatabaseFactory.create(new File(FILE_DATABASE));
         session = SessionFactory.create();
     }
 

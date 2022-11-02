@@ -37,17 +37,17 @@ public interface IContactDatabase {
     boolean delete(long id);
 
     /**
-     * Free text query contacts. Return relevant matches.
+     * Case-insensitive, free text query over all properties.
      * @param keywords query keywords
-     * @return List of contacts
+     * @return List of matching contacts
      */
     List<Contact> query(List<String> keywords);
 
     /**
-     * Query property of contacts. Return relevant matches.
+     * Case-insensitive, query over a specific property in contacts.
      * @param property property name
      * @param query query string
-     * @return List of contacts
+     * @return List of matching contacts
      */
     List<Contact> query(String property, String query);
 }

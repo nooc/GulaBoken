@@ -5,6 +5,7 @@ import yh.gulaboken.models.Contact;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ class FileContactDatabase implements IContactDatabase {
      */
     FileContactDatabase(File dataFile) {
         this.dataFile = dataFile;
+
         //TODO: read contactList from filePath, else create empty list.
 
         this.contactList = new ArrayList<>();
@@ -34,6 +36,7 @@ class FileContactDatabase implements IContactDatabase {
         idCounter += 1;
         newContact.setContactId(idCounter);
         contactList.add(newContact);
+        writeToFile();
         return newContact;
     }
 
@@ -76,6 +79,7 @@ class FileContactDatabase implements IContactDatabase {
         dbAddr.setStreet(addr.getStreet());
         dbAddr.setCity(addr.getCity());
         dbAddr.setZipCode(addr.getZipCode());
+        writeToFile();
         return true;
     }
 
@@ -91,24 +95,77 @@ class FileContactDatabase implements IContactDatabase {
         if(contact != null) {
             // found
             contactList.remove(contact);
+            writeToFile();
             return true;
         }
         return false;
     }
 
+    /**
+     * Write database to file.
+     */
+    private void writeToFile() {
+        // TODO: Write idCounter and contactList to json file.
+    }
+
+
     @Override
     public List<Contact> query(List<String> keywords) {
-        ArrayList<Contact> found = new ArrayList<>();
-        for(var contact : found) {
-            for (var key : keywords) {
-                //TODO: query
+        ArrayList<Contact> found = new ArrayList<>(); // result set
+        // make lowercase
+        String[] lowerKeywords = (String[]) keywords.stream().map(keyword -> keyword.toLowerCase()).toArray();
+        // query all contacts
+
+        for(var contact : contactList) {
+            var haystack = getHaystack(contact);
+            for (var entry : haystack) {
+                for (var key : lowerKeywords) {
+                    if (entry.contains(key)) {
+                        found.add(contact);
+                    }
+                }
             }
         }
         return found;
     }
 
+    /**
+     * Get app property values as a list of lowercase strings.
+     * @param contact Contact
+     * @return List of strings.
+     */
+    private List<String> getHaystack(Contact contact) {
+        return Arrays.asList(
+                contact.getName().toLowerCase(),
+                contact.getSurname().toLowerCase(),
+                contact.getAge(),
+                contact.getTelephoneNumber(),
+                contact.getAddress().toString().toLowerCase()
+        );
+    }
+
+    /**
+     * Query name, surname, street or phone.
+     * @param property property name
+     * @param query query string
+     * @return List of contacts.
+     */
     @Override
     public List<Contact> query(String property, String query) {
-        return null;
+        ArrayList<Contact> found = new ArrayList<>(); // result set
+        var lowercaseQuery = query.toLowerCase();
+        // query all contacts
+        for(var contact : contactList) {
+            if(property.equals("name") && lowercaseQuery.contains(contact.getName().toLowerCase())) {
+                found.add(contact);
+            } else if (property.equals("surname") && lowercaseQuery.contains(contact.getSurname().toLowerCase())) {
+                found.add(contact);
+            } else if (property.equals("street") && lowercaseQuery.contains(contact.getAddress().getStreet().toLowerCase())) {
+                found.add(contact);
+            } else if (property.equals("phone") && lowercaseQuery.contains(contact.getTelephoneNumber())) {
+                found.add(contact);
+            }
+        }
+        return found;
     }
 }

@@ -83,7 +83,7 @@ public class MenuHandler {
 
     private void addMenu() {
         var contactProperties = new HashMap<String,String>();
-        System.out.format("Yellow Book - Add Contact");
+        System.out.println("Yellow Book - Add Contact");
         while(true) {
             if (!contactProperties.isEmpty()) {
                 System.out.println("Current properties:");
@@ -148,11 +148,11 @@ public class MenuHandler {
     /**
      * Search over specific property in contacts.
      * @param property search property name
-     * @param value query string
+     * @param needle query string
      */
-    private void search(String property, String query) {
+    private void search(String property, String needle) {
         // Query for contacts
-        var contacts = context.getContactDatabase().query(property, query);
+        var contacts = context.getContactDatabase().query(property, needle);
         // Handle results.
         searchResultsMenu(contacts);
     }
@@ -173,19 +173,40 @@ public class MenuHandler {
      * @param contacts Search results
      */
     private void searchResultsMenu(List<Contact> contacts) {
-        if(contacts.size() == 1) {
-            printContact(contacts.get(1));
-        } else if (contacts.size() > 1) {
-            for (var contact : contacts) {
-                System.out.format("%d: %s %s\n",
-                        contact.getContactId(),
-                        contact.getName(),
-                        contact.getSurname()
-                );
-            }
-            //TODO: show choices: show, delete, update
-        } else {
+        if(contacts.isEmpty()) {
             System.out.println("Nothing found.");
+            return;
+        }
+        System.out.println("Yellow Book - Search Results");
+        while(true) {
+            if (contacts.size() == 1) {
+                // if only one result, show it
+                printContact(contacts.get(1));
+            } else if (contacts.size() > 1) {
+                // if more than one result, show a simplified list of results
+                for (var contact : contacts) {
+                    System.out.format("%d: %s %s\n",
+                            contact.getContactId(),
+                            contact.getName(),
+                            contact.getSurname()
+                    );
+                }
+            } else {
+                // no more results
+                break;
+            }
+            System.out.format("""
+                    Commands:
+                        show <id>
+                    """);
+            if(context.getSession().getUser().isAdmin()) {
+                System.out.println("    update <id>");
+                System.out.println("    delete <id>");
+            }
+            System.out.format("""
+                        back
+                    > """);
+            getLine(1)
         }
     }
 
