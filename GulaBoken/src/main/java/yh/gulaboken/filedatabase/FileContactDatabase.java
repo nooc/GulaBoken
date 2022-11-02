@@ -1,12 +1,14 @@
 package yh.gulaboken.filedatabase;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import yh.gulaboken.IContactDatabase;
 import yh.gulaboken.models.Contact;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +49,16 @@ class FileContactDatabase implements IContactDatabase {
 
         //TODO: read a DataWrapper instance from filePath, else create empty DataWrapper instance.
         this.data = new DataWrapper();
+        try (FileReader fileReader = new FileReader(dataFile)){
+            Type type = new TypeToken<DataWrapper>(){}.getType();
+            Gson gson = new Gson();
+            dataFile = gson.fromJson(fileReader, type);
+
+        } catch (Exception e){
+            this.data = new DataWrapper();
+        }
+
+
     }
 
     /**
@@ -128,6 +140,15 @@ class FileContactDatabase implements IContactDatabase {
      */
     private void writeToFile() {
         // TODO: Write idCounter and contactList to json file.
+        try (FileWriter fileWriter = new FileWriter(dataFile)){
+
+            Gson gson = new Gson();
+            gson.toJson(data,fileWriter);
+
+
+        } catch (Exception e){
+            System.out.println("Error. Didn't write to file :D");
+        }
     }
 
 
