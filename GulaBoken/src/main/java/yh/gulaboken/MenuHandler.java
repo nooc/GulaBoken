@@ -1,7 +1,5 @@
 package yh.gulaboken;
 
-import yh.gulaboken.models.Contact;
-
 import java.util.*;
 
 public class MenuHandler {
@@ -33,8 +31,8 @@ public class MenuHandler {
                         Hello %s
                     ----------------------------------------
                         COMMANDS
-                    freesearch KEYWORD...
-                    search "name"|"surname"|"street" VALUE
+                    free KEYWORD...
+                    search "name"|"surname"|"street"|"phone" VALUE
                     add
                     """, session.getUser().getUsername());
             if(session.getUser().isAdmin()) {
@@ -52,7 +50,7 @@ public class MenuHandler {
 
             if(command.equals("quit")) {
                 return;
-            } else if (command.equals("freesearch") && size > 1) {
+            } else if (command.equals("free") && size > 1) {
                 freeSearch(commandLine.subList(1,size));
             }
             else if (command.equals("search") && size == 3) {
@@ -83,7 +81,7 @@ public class MenuHandler {
      * Create or edit contact.
      * @param contact Contact or null
      */
-    private void editMenu(Contact contact) {
+    private void editMenu(IContact contact) {
         var contactProperties = getContactProperties(contact);
         System.out.format("""
             ----------------------------------------
@@ -132,27 +130,13 @@ public class MenuHandler {
                     continue;
                 }
                 // create / update
-                Contact contact2;
-                if(contact == null) {
-                    contact2 = new Contact();
-                } else {
-                    contact2 = contact;
-                }
-                var addr = contact2.getAddress();
-                contact2.setName(contactProperties.get("name"));
-                contact2.setSurname(contactProperties.get("surname"));
-                contact2.setAge(contactProperties.get("age"));
-                contact2.setTelephoneNumber(contactProperties.get("phone"));
-                addr.setStreet(contactProperties.get("street"));
-                addr.setCity(contactProperties.get("city"));
-                addr.setZipCode(contactProperties.get("zip"));
 
                 if(contact == null) {
-                    contact2 = context.getContactDatabase().create(contact2);
-                    System.out.format("Created contact with id %d.\n", contact2.getContactId());
+                    var newContact = context.getContactDatabase().create(contactProperties);
+                    System.out.format("Created contact with id %d.\n", newContact.getContactId());
                     break;
-                } else if(context.getContactDatabase().update(contact2)) {
-                    System.out.format("Updated contact with id %d.\n", contact2.getContactId());
+                } else if(context.getContactDatabase().update(contact)) {
+                    System.out.format("Updated contact with id %d.\n", contact.getContactId());
                     break;
                 } else {
                     System.out.format("%s failed\n", contact==null ? "Create" : "Update");
@@ -173,17 +157,16 @@ public class MenuHandler {
      * @param contact Contact
      * @return Key value map.
      */
-    private Map<String,String> getContactProperties(Contact contact) {
+    private Map<String,String> getContactProperties(IContact contact) {
         var properties = new HashMap<String,String>();
         if(contact != null) {
-            var addr = contact.getAddress();
             properties.put("name", contact.getName());
             properties.put("surname", contact.getSurname());
             properties.put("age", contact.getAge());
             properties.put("phone", contact.getTelephoneNumber());
-            properties.put("street", addr.getStreet());
-            properties.put("city", addr.getCity());
-            properties.put("zip", addr.getZipCode());
+            properties.put("street", contact.getStreet());
+            properties.put("city", contact.getCity());
+            properties.put("zip", contact.getZipCode());
         }
         return properties;
     }
@@ -215,7 +198,7 @@ public class MenuHandler {
      * Handle search results.
      * @param contacts Search results
      */
-    private void searchResultsMenu(List<Contact> contacts) {
+    private void searchResultsMenu(List<IContact> contacts) {
         if(contacts.isEmpty()) {
             System.out.println("Nothing found.");
             return;
@@ -309,8 +292,8 @@ public class MenuHandler {
             return getLine(0);
         }
 
-    private void printContact(Contact contact) {
-        var addressStr = contact.getAddress().toString();
+    private void printContact(IContact contact) {
+        var addressStr = contact.getAddressLine();
         System.out.format("""
                 CONTACT %d
                    Name: %s %s

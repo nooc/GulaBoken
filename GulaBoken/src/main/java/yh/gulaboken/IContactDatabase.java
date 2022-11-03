@@ -1,8 +1,7 @@
 package yh.gulaboken;
 
-import yh.gulaboken.models.Contact;
-
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -10,24 +9,24 @@ import java.util.List;
 public interface IContactDatabase {
     /**
      *
-     * @param newEntry
-     * @return
+     * @param properties Contact properties.
+     * @return IContact instance
      */
-    Contact create(Contact newEntry);
+    IContact create(Map<String,String> properties);
 
     /**
      *
      * @param id
      * @return
      */
-    Contact read(long id);
+    IContact read(long id);
 
     /**
      *
      * @param entry
      * @return
      */
-    boolean update(Contact entry);
+    boolean update(IContact entry);
 
     /**
      *
@@ -41,7 +40,7 @@ public interface IContactDatabase {
      * @param keywords query keywords
      * @return List of matching contacts
      */
-    List<Contact> query(List<String> keywords);
+    List<IContact> query(List<String> keywords);
 
     /**
      * Case-insensitive, query over a specific property in contacts.
@@ -49,5 +48,5 @@ public interface IContactDatabase {
      * @param query query string
      * @return List of matching contacts
      */
-    List<Contact> query(String property, String query);
+    List<IContact> query(String property, String query);
 }
