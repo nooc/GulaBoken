@@ -1,15 +1,23 @@
 package yh.gulaboken;
 
+import yh.gulaboken.utils.StringValidator;
+
 import java.util.*;
 
 public class MenuHandler {
+    private static final int SPLIT_IN_TWO = 2;
+    private static final int ARBITARY_SPLIT = 0;
+    private static final int INDEX_0 = 0;
+    private static final int INDEX_1 = 1;
+    private static final int INDEX_2 = 2;
     private static List<String> ADD_ITEMS = new ArrayList<>(Arrays.asList(
-            "name","surname","age","phone","street","city","zip"
+            "name", "surname", "age", "phone", "street", "city", "zip"
     ));
     private final IAppContext context;
 
     /**
      * Constructor
+     *
      * @param context Application context
      */
     public MenuHandler(IAppContext context) {
@@ -21,7 +29,7 @@ public class MenuHandler {
      */
     public void mainMenu() {
         var session = context.getSession();
-        while(true) {
+        while (true) {
 
             // print menu
 
@@ -35,7 +43,7 @@ public class MenuHandler {
                     search "name"|"surname"|"street"|"phone" VALUE
                     add
                     """, session.getUser().getUsername());
-            if(session.getUser().isAdmin()) {
+            if (session.getUser().isAdmin()) {
                 System.out.println("logout");
             } else {
                 System.out.println("login USERNAME PASSWORD");
@@ -45,33 +53,31 @@ public class MenuHandler {
             // handle command
 
             var commandLine = getLine(); // read command
-            var command = commandLine.get(0);
+            var command = commandLine.get(INDEX_0);
             var size = commandLine.size();
 
-            if(command.equals("quit")) {
+            if (command.equals("quit")) {
                 return;
             } else if (command.equals("free") && size > 1) {
-                freeSearch(commandLine.subList(1,size));
-            }
-            else if (command.equals("search") && size == 3) {
-                search(commandLine.get(1), commandLine.get(2));
-            }else if (command.equals("add")) {
+                freeSearch(commandLine.subList(INDEX_1, size));
+            } else if (command.equals("search") && size == 3) {
+                search(commandLine.get(INDEX_1), commandLine.get(INDEX_2));
+            } else if (command.equals("add")) {
                 editMenu(null);
             } else if (command.equals("login") && size == 3) {
                 // find authenticated user
-                var user = context.getUserDatabase().authenticate(commandLine.get(1),commandLine.get(2));
-                if(user==null) {
+                var user = context.getUserDatabase()
+                        .authenticate(commandLine.get(INDEX_1), commandLine.get(INDEX_2));
+                if (user == null) {
                     System.out.println("Login failed.");
                     continue;
                 }
                 // set session user
                 session.setUser(user);
                 System.out.format("User %s logged in.\n", user.getUsername());
-            }
-            else if (command.equals("logout")) {
+            } else if (command.equals("logout")) {
                 session.setUser(null);
-            }
-            else {
+            } else {
                 System.out.println("Invalid command.");
             }
         }
@@ -79,32 +85,33 @@ public class MenuHandler {
 
     /**
      * Create or edit contact.
+     *
      * @param contact Contact or null
      */
     private void editMenu(IContact contact) {
         var contactProperties = getContactProperties(contact);
         System.out.format("""
-            ----------------------------------------
-            Yellow Book - %s Contact
-                Hello %s
-            ----------------------------------------
-        """,
-                contact==null ? "Create" : "Edit",
+                            ----------------------------------------
+                            Yellow Book - %s Contact
+                                Hello %s
+                            ----------------------------------------
+                        """,
+                contact == null ? "Create" : "Edit",
                 context.getSession().getUser().getUsername());
-        while(true) {
+        while (true) {
             System.out.print("""
-                    COMMANDS
-                name VALUE
-                surname VALUE
-                age VALUE
-                phone VALUE...
-                street VALUE
-                city VALUE
-                zip VALUE
-                apply
-                cancel
-                ----------------------------------------
-                """);
+                        COMMANDS
+                    name VALUE
+                    surname VALUE
+                    age VALUE
+                    phone VALUE...
+                    street VALUE
+                    city VALUE
+                    zip VALUE
+                    apply
+                    cancel
+                    ----------------------------------------
+                    """);
             if (!contactProperties.isEmpty()) {
                 for (var entry : contactProperties.entrySet()) {
                     System.out.format("%s = %s\n", entry.getKey(), entry.getValue());
@@ -112,39 +119,58 @@ public class MenuHandler {
                 System.out.println("----------------------------------------");
             }
             System.out.print("> ");
-            var commandLine = getLine(2); // read command
-            var command = commandLine.get(0);
+            var commandLine = getLine(SPLIT_IN_TWO); // read command
+            var command = commandLine.get(INDEX_0);
 
-            if(command.equals("apply")) {
+            if (command.equals("apply")) {
                 // validate
-                if(!contactProperties.containsKey("name")) {
+                if (!contactProperties.containsKey("name")) {
                     System.out.println("Name is missing.");
                     continue;
                 }
-                if(!contactProperties.containsKey("surname")) {
+                if (!contactProperties.containsKey("surname")) {
                     System.out.println("Surname is missing.");
                     continue;
                 }
-                if(!contactProperties.containsKey("phone")) {
+                if (!contactProperties.containsKey("phone")) {
                     System.out.println("Phone numbers are missing.");
                     continue;
                 }
                 // create / update
 
-                if(contact == null) {
+                if (contact == null) {
                     var newContact = context.getContactDatabase().create(contactProperties);
                     System.out.format("Created contact with id %d.\n", newContact.getContactId());
                     break;
-                } else if(context.getContactDatabase().update(contact)) {
+                } else if (context.getContactDatabase().update(contact)) {
                     System.out.format("Updated contact with id %d.\n", contact.getContactId());
                     break;
                 } else {
-                    System.out.format("%s failed\n", contact==null ? "Create" : "Update");
+                    System.out.format("%s failed\n", contact == null ? "Create" : "Update");
                 }
             } else if (command.equals("cancel")) {
                 break;
-            } else if(commandLine.size() > 1 && ADD_ITEMS.contains(command)) {
-                // has value
+            } else if (commandLine.size() > 1 && ADD_ITEMS.contains(command)) {
+
+                if (command.equals("phone")) {
+                    // get string of number(s) and validate using StringValidator
+                    var numbers = commandLine.get(INDEX_1);
+                    if (!StringValidator.validatePhoneNumbers(numbers)) {
+                        System.out.println("Invalid phone number(s).");
+                        continue;
+                    }
+                    // split and join to reformat: ensures proper separator
+                    // then replace
+                    var numbersArray = numbers.split(",\\s*");
+                    commandLine.add(INDEX_1, String.join(", ", numbersArray));
+
+                } else if (command.equals("zip")
+                        && !StringValidator.validateZipcode(commandLine.get(1))) {
+                    // validate zip
+                    System.out.println("Invalid zip code.");
+                    continue;
+                }
+                // command has value -> add/replace in map
                 contactProperties.put(command, commandLine.get(1));
             } else {
                 System.out.println("Invalid input.");
@@ -154,12 +180,13 @@ public class MenuHandler {
 
     /**
      * Get contact properties as map.
+     *
      * @param contact Contact
      * @return Key value map.
      */
-    private Map<String,String> getContactProperties(IContact contact) {
-        var properties = new HashMap<String,String>();
-        if(contact != null) {
+    private Map<String, String> getContactProperties(IContact contact) {
+        var properties = new HashMap<String, String>();
+        if (contact != null) {
             properties.put("name", contact.getName());
             properties.put("surname", contact.getSurname());
             properties.put("age", contact.getAge());
@@ -173,48 +200,54 @@ public class MenuHandler {
 
     /**
      * Search over specific property in contacts.
+     *
      * @param property search property name
-     * @param needle query string
+     * @param needle   query string
      */
     private void search(String property, String needle) {
-        // Query for contacts
+        // Get database from context and query for contacts.
         var contacts = context.getContactDatabase().query(property, needle);
         // Handle results.
-        searchResultsMenu(contacts);
+        manageContactsMenu(contacts);
     }
 
     /**
      * Free text search in contacts.
+     *
      * @param keywords
      */
     private void freeSearch(List<String> keywords) {
-        // Query for contacts
+        // Get database from context and query for contacts.
         var contacts = context.getContactDatabase().query(keywords);
         // Handle results.
-        searchResultsMenu(contacts);
+        manageContactsMenu(contacts);
     }
 
     /**
-     * Handle search results.
-     * @param contacts Search results
+     * Manage set of provided contacts.
+     * Show, update or delete provided contacts.
+     *
+     * @param contacts List of contacts
      */
-    private void searchResultsMenu(List<IContact> contacts) {
-        if(contacts.isEmpty()) {
+    private void manageContactsMenu(List<IContact> contacts) {
+        if (contacts.isEmpty()) {
+            // Nothing to do
             System.out.println("Nothing found.");
             return;
         }
         System.out.format("""
-        ----------------------------------------
-        Yellow Book - Search Results
-            Hello %s
-        ----------------------------------------
-        """, context.getSession().getUser().getUsername());
-        while(true) {
+                ----------------------------------------
+                Yellow Book - Search Results
+                    Hello %s
+                ----------------------------------------
+                """, context.getSession().getUser().getUsername());
+        // menu loop
+        while (true) {
             if (contacts.size() == 1) {
-                // if only one result, show it
-                printContact(contacts.get(0));
+                // if only one contact, show it
+                printContact(contacts.get(INDEX_0));
             } else if (contacts.size() > 1) {
-                // if more than one result, show a simplified list of results
+                // if more than one contact, show a list of contacts
                 for (var contact : contacts) {
                     System.out.format("%d: %s %s\n",
                             contact.getContactId(),
@@ -223,57 +256,70 @@ public class MenuHandler {
                     );
                 }
             } else {
-                // no more results
+                // empty contacts -> break loop
                 break;
             }
             System.out.println("    COMMANDS");
-            if(contacts.size() > 1) {
+            if (contacts.size() > 1) { // single contact is auto shown. hide in that case.
                 System.out.println("show ID");
             }
-            if(context.getSession().getUser().isAdmin()) {
+            if (context.getSession().getUser().isAdmin()) {
+                // show admin menu items
                 System.out.println("update ID");
                 System.out.println("delete ID");
             }
             System.out.print("""
-                        back
-                        ----------------------------------------
-                        > """);
+                    back
+                    ----------------------------------------
+                    > """);
 
-            var commandLine = getLine(2); // read command
-            var command = commandLine.get(0);
-            int contactId;
+            var commandLine = getLine(SPLIT_IN_TWO); // read command and value
+            var command = commandLine.get(INDEX_0);
+            long contactId;
 
-            if(command.equals("back")) { break; }
-            else if(commandLine.size() == 2) {
+            if (command.equals("back")) {
+                // break loop on back
+                break;
+            } else if (commandLine.size() == 2) {
+                // command has one value
                 try {
-                    contactId = Integer.parseInt(commandLine.get(1));
+                    // value should be a number id
+                    contactId = Long.parseLong(commandLine.get(INDEX_1));
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                     continue;
                 }
             } else {
-                // all commands except back take one id argument
+                // all commands except back take one argument
                 System.out.println("Invalid parameters.");
                 continue;
             }
 
-            if(command.equals("show")) {
+            if (command.equals("show")) {
+                // show contact with contactId
                 for (var contact : contacts) {
-                    if(contact.getContactId()==contactId) {
+                    // search and show
+                    if (contact.getContactId() == contactId) {
                         printContact(contact);
                     }
                 }
-            } else if(context.getSession().getUser().isAdmin()) {
-                if(command.equals("update")) {
+            } else if (context.getSession().getUser().isAdmin()) {
+                // update contact with contactId
+                if (command.equals("update")) {
+                    // search and edit
                     for (var contact : contacts) {
-                        if(contact.getContactId()==contactId) {
+                        if (contact.getContactId() == contactId) {
+                            // edit contact
                             editMenu(contact);
                         }
                     }
-                } else if(command.equals("delete")) {
+                } else if (command.equals("delete")) {
+                    // delete contact with contactId
                     for (var contact : contacts) {
-                        if(contact.getContactId() == contactId) {
+                        // search and remove
+                        if (contact.getContactId() == contactId) {
                             contacts.remove(contact);
+                            context.getContactDatabase().delete(contactId);
                             System.out.format("Removed contact %d.\n", contactId);
                         }
                     }
@@ -282,29 +328,41 @@ public class MenuHandler {
         }
     }
 
-
-
-        private List<String> getLine(int splitLimit) {
-        var line= context.getScanner().nextLine().trim().split("\\s+", splitLimit);
-        return Arrays.stream(line).toList();
+    /**
+     * Get line from console split into max `splitLimit` parts by whitespace.
+     * @param splitLimit split limit
+     * @return command line as list
+     */
+    private List<String> getLine(int splitLimit) {
+        var line = context.getScanner().nextLine().trim().split("\\s+", splitLimit);
+        return new ArrayList<>(List.of(line));
     }
-        private List<String> getLine() {
-            return getLine(0);
-        }
 
+    /**
+     * Get line from console split into parts by whitespace.
+     * @return command line as list
+     */
+    private List<String> getLine() {
+        return getLine(ARBITARY_SPLIT);
+    }
+
+    /**
+     * Output contact to console.
+     * @param contact
+     */
     private void printContact(IContact contact) {
         var addressStr = contact.getAddressLine();
         System.out.format("""
-                CONTACT %d
-                   Name: %s %s
-                    Age: %s
-                    Tel: %s
-                """,
+                        CONTACT %d
+                           Name: %s %s
+                            Age: %s
+                            Tel: %s
+                        """,
                 contact.getContactId(),
                 contact.getName(), contact.getSurname(),
                 contact.getAge(),
                 contact.getTelephoneNumber());
-        if(!addressStr.isEmpty()) {
+        if (!addressStr.isEmpty()) {
             System.out.format("Address: %s\n", addressStr);
         }
     }

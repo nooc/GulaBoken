@@ -8,36 +8,38 @@ import java.util.Map;
  */
 public interface IContactDatabase {
     /**
-     *
+     * Create a new contact from properties.
+     * Contact is persisted to file.
      * @param properties Contact properties.
-     * @return IContact instance
+     * @return A contact or null.
      */
     IContact create(Map<String,String> properties);
 
     /**
-     *
-     * @param id
-     * @return
+     * Return a contact with matching id.
+     * @param id Contact id
+     * @return A contact or null.
      */
     IContact read(long id);
 
     /**
-     *
-     * @param entry
-     * @return
+     * Update a contact.
+     * Contact is persisted to file.
+     * @param contact
+     * @return True if updated, else false.
      */
-    boolean update(IContact entry);
+    boolean update(IContact contact);
 
     /**
-     *
-     * @param id
-     * @return
+     * Delete contact with matching id.
+     * @param id Contact id
+     * @return True if a contact was removed, else false.
      */
     boolean delete(long id);
 
     /**
      * Case-insensitive, free text query over all properties.
-     * @param keywords query keywords
+     * @param keywords Query keywords
      * @return List of matching contacts
      */
     List<IContact> query(List<String> keywords);

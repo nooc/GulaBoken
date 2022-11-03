@@ -1,20 +1,36 @@
 package yh.gulaboken.filedatabase;
 
 import yh.gulaboken.IContact;
-import yh.gulaboken.models.BaseModel;
 
 import java.util.LinkedList;
 
+/**
+ * Implements IContact interface.
+ */
 class Contact implements IContact {
+    /**
+     * An unique contact id.
+     */
     private long contactId;
+    /** contact name */
     private String name;
+    /** contact surname */
     private String surname;
+    /** contact age */
     private String age;
+    /** one or more comma separated phone numbers */
     private String telephoneNumber;
+    /** street name and number */
     private String street;
+    /** city name */
     private String city;
+    /** zip code number */
     private String zipCode;
 
+    /**
+     * Constructor
+     * Initialize contact to empty state.
+     */
     Contact() {
         this.contactId = 0;
         this.name = "";
@@ -72,7 +88,6 @@ class Contact implements IContact {
     }
 
     public void setTelephoneNumber(String telephoneNumber) {
-
         this.telephoneNumber = nonNull(telephoneNumber);
     }
 

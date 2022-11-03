@@ -1,6 +1,7 @@
 package yh.gulaboken.filedatabase;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import yh.gulaboken.IContact;
 import yh.gulaboken.IContactDatabase;
@@ -42,6 +43,10 @@ class FileContactDatabase implements IContactDatabase {
     }
 
     /**
+     * Gson serializer.
+     */
+    private final Gson gson;
+    /**
      * File backend
      */
     private final File dataFile;
@@ -65,10 +70,15 @@ class FileContactDatabase implements IContactDatabase {
         this.dataFile = dataFile;
         // data type of for DataWrapper
         this.dataType = new TypeToken<DataWrapper>(){}.getType();
+
+        // create gson instance with pretty printing.
+        this.gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+
         // read data from json
         try (FileReader fileReader = new FileReader(dataFile)) {
-            Gson gson = new Gson();
-            data = gson.fromJson(fileReader, dataType);
+            this.data = gson.fromJson(fileReader, dataType);
         } catch (Exception e) {
             // create new, empty data if read fails
             this.data = new DataWrapper();
@@ -118,9 +128,7 @@ class FileContactDatabase implements IContactDatabase {
     }
 
     /**
-     * Persist existing contact.
-     * @param contact
-     * @return True if success, else false.
+     * @see IContactDatabase#update(IContact)
      */
     @Override
     public boolean update(IContact contact) {
@@ -143,9 +151,7 @@ class FileContactDatabase implements IContactDatabase {
     }
 
     /**
-     * Delete contact from database.
-     * @param id Contact id.
-     * @return True if success, else false.
+     * @see IContactDatabase#delete(long)
      */
     @Override
     public boolean delete(long id) {
@@ -161,31 +167,30 @@ class FileContactDatabase implements IContactDatabase {
     }
 
     /**
-     * Write database to file.
+     * Persist data to json file.
      */
     private void writeToFile() {
-        try (FileWriter fileWriter = new FileWriter(dataFile)){
-            Gson gson = new Gson();
+        try (FileWriter fileWriter = new FileWriter(dataFile)) {
+            // write json
             gson.toJson(data, dataType, fileWriter);
-        } catch (Exception e){
-            System.out.println("Error. Didn't write to file :D");
+        } catch (Exception e) {
+            System.out.println("Error. Didn't write to file :(");
         }
     }
-
 
     /**
      * See {@link IContactDatabase}
      */
     @Override
     public List<IContact> query(List<String> keywords) {
-        Set<IContact> found = new HashSet<>(); // result set
+        // result set
+        Set<IContact> found = new HashSet<>();
         // make lowercase
         var keywordsArray = keywords.toArray(new String[keywords.size()]);
         for(int i = 0; i<keywordsArray.length; ++i) {
             keywordsArray[i] = keywordsArray[i].toLowerCase();
         }
         // query all contacts
-
         for(var contact : data.contactList) {
             var haystack = getHaystack(contact);
             for (var entry : haystack) {
@@ -200,18 +205,18 @@ class FileContactDatabase implements IContactDatabase {
     }
 
     /**
-     * Get app property values as a list of lowercase strings.
+     * Get searchable values as a list of lowercase strings.
      * @param contact Contact
-     * @return List of strings.
+     * @return Collection of strings
      */
-    private List<String> getHaystack(IContact contact) {
-        return new ArrayList<>(Arrays.asList(
+    private Collection<String> getHaystack(IContact contact) {
+        return Arrays.asList(
                 contact.getName().toLowerCase(),
                 contact.getSurname().toLowerCase(),
                 contact.getAge(),
                 contact.getTelephoneNumber(),
                 contact.getAddressLine().toLowerCase()
-        ));
+        );
     }
 
     /**
@@ -222,8 +227,8 @@ class FileContactDatabase implements IContactDatabase {
      */
     @Override
     public List<IContact> query(String property, String query) {
-        Set<IContact> found = new HashSet<>(); // result set
-        var lowercaseQuery = query.toLowerCase();
+        Set<IContact> found = new HashSet<>(); // result set. guarantees no duplicates
+        var lowercaseQuery = query.toLowerCase(); // assure lower case
         // query all contacts
         for(var contact : data.contactList) {
             if(property.equals("name") && contact.getName().toLowerCase().contains(lowercaseQuery)) {
