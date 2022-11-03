@@ -25,11 +25,6 @@ class HardcodedUserDatabase implements IUserDatabase {
         };
     }
 
-    /**
-     * Get user with username.
-     * @param username
-     * @return IUser
-     */
     @Override
     public IUser getUser(String username) {
         for (var user : users) {
@@ -40,10 +35,11 @@ class HardcodedUserDatabase implements IUserDatabase {
         return null;
     }
 
-
     @Override
     public IUser authenticate(String username, String password) {
+        // find user by username
         var user = getUser(username);
+        // get hash for password and compare it to user's hash
         if(user!=null && user.getPasswordHash().equals(User.calculatePasswordHash(password))) {
             return user;
         }

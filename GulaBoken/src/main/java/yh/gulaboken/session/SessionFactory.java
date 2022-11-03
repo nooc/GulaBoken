@@ -9,7 +9,7 @@ import yh.gulaboken.IUser;
 public class SessionFactory {
 
     /**
-     * Create an Session instance.
+     * Create an ISession instance.
      * @param defaultUser Default session user
      * @return ISession instance
      */

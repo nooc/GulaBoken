@@ -7,11 +7,7 @@ import yh.gulaboken.userdatabase.HardcodedUserDatabaseFactory;
 /**
  * Session implementation.
  */
-public class Session implements ISession {
-    /**
-     * Default session user.
-     */
-    private static final String DEFAULT_USER = "guest";
+class Session implements ISession {
 
     /**
      * Current user.

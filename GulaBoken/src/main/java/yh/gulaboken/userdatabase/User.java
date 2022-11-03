@@ -4,7 +4,7 @@ import yh.gulaboken.IUser;
 
 import java.security.MessageDigest;
 
-public class User implements IUser {
+class User implements IUser {
     private final String username;
     private String password;
     private final boolean isAdmin;
@@ -16,25 +16,17 @@ public class User implements IUser {
      * @param password
      * @param isAdmin
      */
-    public User(String username, String password, boolean isAdmin) {
+    User(String username, String password, boolean isAdmin) {
         this.username = username;
         this.password = calculatePasswordHash(password);
         this.isAdmin = isAdmin;
     }
 
-    /**
-     * Get username.
-     * @return String
-     */
     @Override
     public String getUsername() {
         return username;
     }
 
-    /**
-     * Get password hash.
-     * @return String
-     */
     @Override
     public String getPasswordHash() {
         return password;
@@ -45,7 +37,11 @@ public class User implements IUser {
         return isAdmin;
     }
 
-
+    /**
+     * Calculate MD5 hash for the clear-text password.
+     * @param password Clear-text password
+     * @return MD5 hash for password
+     */
     static String calculatePasswordHash(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");

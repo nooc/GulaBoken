@@ -101,14 +101,14 @@ public class MenuHandler {
         while (true) {
             System.out.print("""
                         COMMANDS
-                    name VALUE
-                    surname VALUE
-                    age VALUE
-                    phone VALUE...
-                    street VALUE
-                    city VALUE
-                    zip VALUE
-                    apply
+                    name VALUE      - Name.
+                    surname VALUE   - Surname.
+                    age VALUE       - Age 0-130.
+                    phone VALUE     - Comma separated list of phone numbers.
+                    street VALUE    - Street name and number.
+                    city VALUE      - City name.
+                    zip VALUE       - Zip code of 5 digits.
+                    apply           
                     cancel
                     ----------------------------------------
                     """);

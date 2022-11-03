@@ -95,6 +95,9 @@ class FileContactDatabase implements IContactDatabase {
         if(properties.containsKey("name")
                 && properties.containsKey("surname")
                 && properties.containsKey("phone")) {
+            // contains minimum info: valid
+
+            // create contact instance and set data
             var contact = new Contact();
             contact.setName(properties.get("name"));
             contact.setSurname(properties.get("surname"));
@@ -103,19 +106,16 @@ class FileContactDatabase implements IContactDatabase {
             contact.setStreet(properties.get("street"));
             contact.setCity(properties.get("city"));
             contact.setZipCode(properties.get("zip"));
+            // set new id
             contact.setContactId(data.nextId());
+            // add to list and persist to file
             data.contactList.add(contact);
             writeToFile();
-            return contact;
+            return contact; // return new instance
         }
         return null;
     }
 
-    /**
-     * Read contact with id.
-     * @param id Contact id
-     * @return Contact or null
-     */
     @Override
     public IContact read(long id) {
         for(var contact : data.contactList){
@@ -123,13 +123,9 @@ class FileContactDatabase implements IContactDatabase {
                 return contact;
             }
         }
-
         return null;
     }
-
-    /**
-     * @see IContactDatabase#update(IContact)
-     */
+    
     @Override
     public boolean update(IContact contact) {
         // find db contact
