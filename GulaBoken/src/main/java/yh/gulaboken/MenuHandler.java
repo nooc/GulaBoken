@@ -227,9 +227,10 @@ public class MenuHandler {
      * Manage set of provided contacts.
      * Show, update or delete provided contacts.
      *
-     * @param contacts List of contacts
+     * @param contactsIn List of contacts
      */
-    private void manageContactsMenu(List<IContact> contacts) {
+    private void manageContactsMenu(List<IContact> contactsIn) {
+        var contacts = new ArrayList<IContact>(contactsIn);
         if (contacts.isEmpty()) {
             // Nothing to do
             System.out.println("Nothing found.");
@@ -321,6 +322,7 @@ public class MenuHandler {
                             contacts.remove(contact);
                             context.getContactDatabase().delete(contactId);
                             System.out.format("Removed contact %d.\n", contactId);
+                            break;
                         }
                     }
                 }
