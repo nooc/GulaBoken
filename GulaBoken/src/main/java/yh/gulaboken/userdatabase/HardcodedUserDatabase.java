@@ -36,13 +36,7 @@ class HardcodedUserDatabase implements IUserDatabase {
         return null;
     }
 
-    /**
-     * Authenticate user with username and password and return the authenticated user.
-     * If user doesn't exist or authentication fails, return null.
-     * @param username
-     * @param password
-     * @return IUser
-     */
+
     @Override
     public IUser authenticate(String username, String password) {
         var user = getUser(username);

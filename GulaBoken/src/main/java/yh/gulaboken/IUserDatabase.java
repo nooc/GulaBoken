@@ -9,10 +9,11 @@ public interface IUserDatabase {
     IUser getUser(String username);
 
     /**
-     *
+     * Authenticate user with username and password and return the authenticated user.
+     * If user doesn't exist or authentication fails, return null.
      * @param username
      * @param password
-     * @return Authenticated user
+     * @return IUser
      */
     IUser authenticate(String username, String password);
 }

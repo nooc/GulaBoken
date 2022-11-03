@@ -115,10 +115,6 @@ class Contact implements IContact {
         this.zipCode = nonNull(zipCode);
     }
 
-    /**
-     * Join address entries into a single comma separated line.
-     * @return
-     */
     public String getAddressLine() {
         var addressItems = new LinkedList<String>();
         if(!street.isEmpty())  { addressItems.add(street); }

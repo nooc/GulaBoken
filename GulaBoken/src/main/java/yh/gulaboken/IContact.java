@@ -25,7 +25,7 @@ public interface IContact {
      */
     String getSurname();
     /**
-     * Get surname
+     * Set surname
      */
     void setSurname(String surname);
     /**
@@ -38,33 +38,45 @@ public interface IContact {
      */
     void setAge(String age);
     /**
-     * Get
-     * @return contact id
+     * Get phone number
+     * @return phone number
      */
     String getPhoneNumber();
     /**
-     * Set age
+     * Set phone number
      */
     void setPhoneNumber(String phoneNumber);
     /**
      * Get street
-     * @return contact id
+     * @return street
      */
     String getStreet();
-
+    /**
+     * Set street
+     */
     void setStreet(String street);
-
+    /**
+     * Get city
+     * @return city
+     */
     String getCity();
-
+    /**
+     * Set city
+     */
     void setCity(String city);
-
+    /**
+     * Get zip code
+     * @return zip code
+     */
     String getZipCode();
-
+    /**
+     * set zip code
+     */
     void setZipCode(String zipCode);
 
     /**
      * Join address entries into a single comma separated line.
-     * @return
+     * @return address line
      */
     String getAddressLine();
 }
