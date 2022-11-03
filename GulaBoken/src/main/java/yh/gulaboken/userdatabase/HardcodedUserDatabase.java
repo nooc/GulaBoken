@@ -3,6 +3,9 @@ package yh.gulaboken.userdatabase;
 import yh.gulaboken.IUser;
 import yh.gulaboken.IUserDatabase;
 
+/**
+ * A hard coded user database.
+ */
 class HardcodedUserDatabase implements IUserDatabase {
 
     /**
@@ -15,6 +18,7 @@ class HardcodedUserDatabase implements IUserDatabase {
      * Create list of hard coded users.
      */
     HardcodedUserDatabase() {
+        // Some hardcoded users
         this.users = new IUser[] {
                 new User("guest", "guest", false),
                 new User("admin", "secret", true)

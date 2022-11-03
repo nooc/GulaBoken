@@ -3,11 +3,15 @@ package yh.gulaboken.session;
 import yh.gulaboken.ISession;
 import yh.gulaboken.IUser;
 
+/**
+ * Factory for SessionFactory.
+ */
 public class SessionFactory {
 
     /**
-     * Get the session singleton and create it if needed.
-     * @return ISession
+     * Create an Session instance.
+     * @param defaultUser Default session user
+     * @return ISession instance
      */
     public static ISession create(IUser defaultUser) {
         return new Session(defaultUser);
