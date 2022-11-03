@@ -19,7 +19,7 @@ class Contact implements IContact {
     /** contact age */
     private String age;
     /** one or more comma separated phone numbers */
-    private String telephoneNumber;
+    private String phoneNumber;
     /** street name and number */
     private String street;
     /** city name */
@@ -36,7 +36,7 @@ class Contact implements IContact {
         this.name = "";
         this.surname = "";
         this.age = "";
-        this.telephoneNumber = "";
+        this.phoneNumber = "";
         this.street = "";
         this.city = "";
         this.zipCode = "";
@@ -83,12 +83,12 @@ class Contact implements IContact {
         this.age = nonNull(age);
     }
 
-    public String getTelephoneNumber() {
-        return telephoneNumber;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setTelephoneNumber(String telephoneNumber) {
-        this.telephoneNumber = nonNull(telephoneNumber);
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = nonNull(phoneNumber);
     }
 
     public String getStreet() {

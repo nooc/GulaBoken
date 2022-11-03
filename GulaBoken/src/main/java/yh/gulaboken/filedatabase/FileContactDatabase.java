@@ -99,7 +99,7 @@ class FileContactDatabase implements IContactDatabase {
             contact.setName(properties.get("name"));
             contact.setSurname(properties.get("surname"));
             contact.setAge(properties.get("age"));
-            contact.setTelephoneNumber(properties.get("phone"));
+            contact.setPhoneNumber(properties.get("phone"));
             contact.setStreet(properties.get("street"));
             contact.setCity(properties.get("city"));
             contact.setZipCode(properties.get("zip"));
@@ -142,7 +142,7 @@ class FileContactDatabase implements IContactDatabase {
         dBContact.setName(contact.getName());
         dBContact.setSurname(contact.getSurname());
         dBContact.setAge(contact.getAge());
-        dBContact.setTelephoneNumber(contact.getTelephoneNumber());
+        dBContact.setPhoneNumber(contact.getPhoneNumber());
         dBContact.setStreet(contact.getStreet());
         dBContact.setCity(contact.getCity());
         dBContact.setZipCode(contact.getZipCode());
@@ -214,7 +214,7 @@ class FileContactDatabase implements IContactDatabase {
                 contact.getName().toLowerCase(),
                 contact.getSurname().toLowerCase(),
                 contact.getAge(),
-                contact.getTelephoneNumber(),
+                contact.getPhoneNumber(),
                 contact.getAddressLine().toLowerCase()
         );
     }
@@ -237,7 +237,7 @@ class FileContactDatabase implements IContactDatabase {
                 found.add(contact);
             } else if (property.equals("street") && contact.getStreet().toLowerCase().contains(lowercaseQuery)) {
                 found.add(contact);
-            } else if (property.equals("phone") && contact.getTelephoneNumber().contains(lowercaseQuery)) {
+            } else if (property.equals("phone") && contact.getPhoneNumber().contains(lowercaseQuery)) {
                 found.add(contact);
             }
         }

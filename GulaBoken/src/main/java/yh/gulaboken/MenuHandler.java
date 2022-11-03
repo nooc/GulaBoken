@@ -190,7 +190,7 @@ public class MenuHandler {
             properties.put("name", contact.getName());
             properties.put("surname", contact.getSurname());
             properties.put("age", contact.getAge());
-            properties.put("phone", contact.getTelephoneNumber());
+            properties.put("phone", contact.getPhoneNumber());
             properties.put("street", contact.getStreet());
             properties.put("city", contact.getCity());
             properties.put("zip", contact.getZipCode());
@@ -361,7 +361,7 @@ public class MenuHandler {
                 contact.getContactId(),
                 contact.getName(), contact.getSurname(),
                 contact.getAge(),
-                contact.getTelephoneNumber());
+                contact.getPhoneNumber());
         if (!addressStr.isEmpty()) {
             System.out.format("Address: %s\n", addressStr);
         }
