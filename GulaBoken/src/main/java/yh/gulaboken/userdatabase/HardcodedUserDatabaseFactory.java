@@ -8,10 +8,11 @@ import yh.gulaboken.IUserDatabase;
 public class HardcodedUserDatabaseFactory {
 
     /**
-     * Return instance of an HardcodedUserDatabase.
-     * @return IUserDatabase
+     * Create instance of an IUserDatabase.
+     *
+     * @return IUserDatabase instance
      */
     public static IUserDatabase create() {
-         return new HardcodedUserDatabase();
+        return new HardcodedUserDatabase();
     }
 }

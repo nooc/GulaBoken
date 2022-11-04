@@ -19,8 +19,8 @@ class HardcodedUserDatabase implements IUserDatabase {
      */
     HardcodedUserDatabase() {
         // Some hardcoded users
-        this.users = new IUser[] {
-                new User("guest", "guest", false),
+        this.users = new IUser[]{
+                new User("guest", null, false),
                 new User("admin", "secret", true)
         };
     }
@@ -28,7 +28,7 @@ class HardcodedUserDatabase implements IUserDatabase {
     @Override
     public IUser getUser(String username) {
         for (var user : users) {
-            if(user.getUsername().equals(username)) {
+            if (user.getUsername().equals(username)) {
                 return user;
             }
         }
@@ -40,7 +40,7 @@ class HardcodedUserDatabase implements IUserDatabase {
         // find user by username
         var user = getUser(username);
         // get hash for password and compare it to user's hash
-        if(user!=null && user.getPasswordHash().equals(User.calculatePasswordHash(password))) {
+        if (user != null && user.getPasswordHash().equals(User.calculatePasswordHash(password))) {
             return user;
         }
         return null;

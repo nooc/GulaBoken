@@ -2,16 +2,18 @@ package yh.gulaboken.filedatabase;
 
 import yh.gulaboken.IContactDatabase;
 
+import javax.validation.constraints.NotNull;
 import java.io.File;
 
 public class FileContactDatabaseFactory {
 
     /**
-     * Return database instance.
+     * Create instance of an IContactDatabase.
+     *
      * @param dataFile Path to data file.
-     * @return IContactDatabase
+     * @return IContactDatabase instance
      */
-    public static IContactDatabase create(File dataFile) {
+    public static IContactDatabase create(@NotNull File dataFile) {
 
         return new FileContactDatabase(dataFile);
     }

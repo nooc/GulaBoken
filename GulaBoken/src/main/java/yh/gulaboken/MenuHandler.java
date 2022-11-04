@@ -6,11 +6,10 @@ import java.util.*;
 
 public class MenuHandler {
     private static final int SPLIT_IN_TWO = 2;
-    private static final int ARBITARY_SPLIT = 0;
     private static final int INDEX_0 = 0;
     private static final int INDEX_1 = 1;
     private static final int INDEX_2 = 2;
-    private static List<String> ADD_ITEMS = new ArrayList<>(Arrays.asList(
+    private static final List<String> ADDABLE_ITEMS = new ArrayList<>(Arrays.asList(
             "name", "surname", "age", "phone", "street", "city", "zip"
     ));
     private final IAppContext context;
@@ -29,6 +28,7 @@ public class MenuHandler {
      */
     public void mainMenu() {
         var session = context.getSession();
+        var reader = context.getLineReader();
         while (true) {
 
             // print menu
@@ -52,7 +52,7 @@ public class MenuHandler {
 
             // handle command
 
-            var commandLine = getLine(); // read command
+            var commandLine = reader.getLine(); // read command
             var command = commandLine.get(INDEX_0);
             var size = commandLine.size();
 
@@ -89,6 +89,7 @@ public class MenuHandler {
      * @param contact Contact or null
      */
     private void editMenu(IContact contact) {
+        var reader = context.getLineReader();
         var contactProperties = getContactProperties(contact);
         System.out.format("""
                             ----------------------------------------
@@ -119,7 +120,7 @@ public class MenuHandler {
                 System.out.println("----------------------------------------");
             }
             System.out.print("> ");
-            var commandLine = getLine(SPLIT_IN_TWO); // read command
+            var commandLine = reader.getLine(SPLIT_IN_TWO); // read command
             var command = commandLine.get(INDEX_0);
 
             if (command.equals("apply")) {
@@ -150,7 +151,7 @@ public class MenuHandler {
                 }
             } else if (command.equals("cancel")) {
                 break;
-            } else if (commandLine.size() > 1 && ADD_ITEMS.contains(command)) {
+            } else if (commandLine.size() > 1 && ADDABLE_ITEMS.contains(command)) {
 
                 if (command.equals("phone")) {
                     // get string of number(s) and validate using StringValidator
@@ -159,10 +160,10 @@ public class MenuHandler {
                         System.out.println("Invalid phone number(s).");
                         continue;
                     }
-                    // split and join to reformat: ensures proper separator
-                    // then replace
+                    // split and join to reformat and ensures proper separator
+                    // then replace item in the list.
                     var numbersArray = numbers.split(",\\s*");
-                    commandLine.add(INDEX_1, String.join(", ", numbersArray));
+                    commandLine.set(INDEX_1, String.join(", ", numbersArray));
 
                 } else if (command.equals("zip")
                         && !StringValidator.validateZipcode(commandLine.get(1))) {
@@ -206,7 +207,7 @@ public class MenuHandler {
      */
     private void search(String property, String needle) {
         // Get database from context and query for contacts.
-        var contacts = context.getContactDatabase().query(property, needle);
+        var contacts = context.getContactDatabase().queryByProperty(property, needle);
         // Handle results.
         manageContactsMenu(contacts);
     }
@@ -218,7 +219,7 @@ public class MenuHandler {
      */
     private void freeSearch(List<String> keywords) {
         // Get database from context and query for contacts.
-        var contacts = context.getContactDatabase().query(keywords);
+        var contacts = context.getContactDatabase().queryByKeywords(keywords);
         // Handle results.
         manageContactsMenu(contacts);
     }
@@ -230,6 +231,7 @@ public class MenuHandler {
      * @param contactsIn List of contacts
      */
     private void manageContactsMenu(List<IContact> contactsIn) {
+        var reader = context.getLineReader();
         var contacts = new ArrayList<IContact>(contactsIn);
         if (contacts.isEmpty()) {
             // Nothing to do
@@ -274,7 +276,7 @@ public class MenuHandler {
                     ----------------------------------------
                     > """);
 
-            var commandLine = getLine(SPLIT_IN_TWO); // read command and value
+            var commandLine = reader.getLine(SPLIT_IN_TWO); // read command and value
             var command = commandLine.get(INDEX_0);
             long contactId;
 
@@ -331,25 +333,8 @@ public class MenuHandler {
     }
 
     /**
-     * Get line from console split into max `splitLimit` parts by whitespace.
-     * @param splitLimit split limit
-     * @return command line as list
-     */
-    private List<String> getLine(int splitLimit) {
-        var line = context.getScanner().nextLine().trim().split("\\s+", splitLimit);
-        return new ArrayList<>(List.of(line));
-    }
-
-    /**
-     * Get line from console split into parts by whitespace.
-     * @return command line as list
-     */
-    private List<String> getLine() {
-        return getLine(ARBITARY_SPLIT);
-    }
-
-    /**
      * Output contact to console.
+     *
      * @param contact
      */
     private void printContact(IContact contact) {

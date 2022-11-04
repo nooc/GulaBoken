@@ -1,16 +1,20 @@
 package yh.gulaboken;
 
+import javax.validation.constraints.NotNull;
+
 public interface ISession {
 
     /**
      * Get current user.
+     *
      * @return IUser
      */
+    @NotNull
     IUser getUser();
 
     /**
      * Set current user.
-     * If user is null, set user to default.
+     * If user is null, set user to default user.
      */
     void setUser(IUser user);
 }

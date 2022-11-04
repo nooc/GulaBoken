@@ -2,103 +2,60 @@ package yh.gulaboken.filedatabase;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import yh.gulaboken.IContact;
 import yh.gulaboken.IContactDatabase;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.FileReader;
-import java.lang.reflect.Type;
+import java.io.FileWriter;
 import java.util.*;
 
 /**
  * A contact database stored as a json file.
  */
 class FileContactDatabase implements IContactDatabase {
-
-    /**
-     * Data wrapper for easy json serialization.
-     */
-    private class DataWrapper {
-        long idCounter; // counter for handling unique contact ids
-        List<Contact> contactList; // list of contacts
-
-        /**
-         * Constructor
-         * Set to initial state.
-         */
-        DataWrapper() {
-            this.idCounter = 100;
-            this.contactList = new ArrayList<>();
-        }
-
-        /**
-         * Get next unique id.
-         * @return
-         */
-        long nextId() {
-            return idCounter += 1;
-        }
-    }
-
     /**
      * Gson serializer.
      */
     private final Gson gson;
     /**
-     * File backend
+     * File backend.
      */
     private final File dataFile;
-
     /**
-     * Data instance
+     * Wrapper instance.
      */
-    private DataWrapper data;
-
-    /**
-     * Type for Gson serializer.
-     */
-    private final Type dataType;
+    private DataWrapper wrapper;
 
     /**
      * Constructor
      * Try reading data from file, else initialize with new, empty data.
+     *
      * @param dataFile json file
      */
     FileContactDatabase(File dataFile) {
         this.dataFile = dataFile;
-        // data type of for DataWrapper
-        this.dataType = new TypeToken<DataWrapper>(){}.getType();
-
-        // create gson instance with pretty printing.
+        // Create gson instance with pretty printing.
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .create();
-
-        // read data from json
+        // Create wrapper from json.
         try (FileReader fileReader = new FileReader(dataFile)) {
-            this.data = gson.fromJson(fileReader, dataType);
+            this.wrapper = gson.fromJson(fileReader, DataWrapper.TYPE);
         } catch (Exception e) {
-            // create new, empty data if read fails
-            this.data = new DataWrapper();
+            // Create new, wrapper if read fails.
+            this.wrapper = new DataWrapper();
         }
     }
 
-    /**
-     * Create database contact.
-     * @param properties Contact
-     * @return Contact with new id
-     */
     @Override
-    public IContact create(Map<String,String> properties) {
-        if(properties.containsKey("name")
+    public IContact create(Map<String, String> properties) {
+        // Check for minimum info
+        if (properties.containsKey("name")
                 && properties.containsKey("surname")
                 && properties.containsKey("phone")) {
-            // contains minimum info: valid
-
-            // create contact instance and set data
-            var contact = new Contact();
+            // Create contact instance and set data.
+            var contact = new Contact(wrapper.nextId());
             contact.setName(properties.get("name"));
             contact.setSurname(properties.get("surname"));
             contact.setAge(properties.get("age"));
@@ -106,31 +63,29 @@ class FileContactDatabase implements IContactDatabase {
             contact.setStreet(properties.get("street"));
             contact.setCity(properties.get("city"));
             contact.setZipCode(properties.get("zip"));
-            // set new id
-            contact.setContactId(data.nextId());
-            // add to list and persist to file
-            data.contactList.add(contact);
+            // Add to list and persist to file.
+            wrapper.getContactList().add(contact);
             writeToFile();
-            return contact; // return new instance
+            return contact; // Return new contact instance.
         }
         return null;
     }
 
     @Override
     public IContact read(long id) {
-        for(var contact : data.contactList){
-            if(contact.getContactId() == id){
+        for (var contact : wrapper.getContactList()) {
+            if (contact.getContactId() == id) {
                 return contact;
             }
         }
         return null;
     }
-    
+
     @Override
     public boolean update(IContact contact) {
         // find db contact
         var dBContact = read(contact.getContactId());
-        if(dBContact == null) {
+        if (dBContact == null) {
             // not found
             return false;
         }
@@ -152,10 +107,10 @@ class FileContactDatabase implements IContactDatabase {
     @Override
     public boolean delete(long id) {
         // find contact
-        var contact = read (id);
-        if(contact != null) {
+        var contact = read(id);
+        if (contact != null) {
             // found
-            data.contactList.remove(contact);
+            wrapper.getContactList().remove(contact);
             writeToFile();
             return true;
         }
@@ -168,7 +123,7 @@ class FileContactDatabase implements IContactDatabase {
     private void writeToFile() {
         try (FileWriter fileWriter = new FileWriter(dataFile)) {
             // write json
-            gson.toJson(data, dataType, fileWriter);
+            gson.toJson(wrapper, DataWrapper.TYPE, fileWriter);
         } catch (Exception e) {
             System.out.println("Error. Didn't write to file :(");
         }
@@ -178,30 +133,41 @@ class FileContactDatabase implements IContactDatabase {
      * See {@link IContactDatabase}
      */
     @Override
-    public List<IContact> query(List<String> keywords) {
+    public List<IContact> queryByKeywords(Collection<String> keywords) {
         // result set
-        Set<IContact> found = new HashSet<>();
+        Set<IContact> foundContacts = new HashSet<>();
         // make lowercase
         var keywordsArray = keywords.toArray(new String[keywords.size()]);
-        for(int i = 0; i<keywordsArray.length; ++i) {
+        for (int i = 0; i < keywordsArray.length; ++i) {
             keywordsArray[i] = keywordsArray[i].toLowerCase();
         }
         // query all contacts
-        for(var contact : data.contactList) {
+        for (var contact : wrapper.getContactList()) {
+            // for all contacts...
             var haystack = getHaystack(contact);
-            for (var entry : haystack) {
-                for (var key : keywordsArray) {
+            int foundCount = 0; // keys found
+            for (var key : keywordsArray) {
+                // for all keys...
+                for(var entry : haystack) {
+                    // for all searchable values in a contact
                     if (entry.contains(key)) {
-                        found.add(contact);
+                        // found key match
+                        foundCount++;
+                        break;
                     }
                 }
             }
+            if(foundCount == keywordsArray.length) {
+                // all keys found
+                foundContacts.add(contact);
+            }
         }
-        return found.stream().toList();
+        return foundContacts.stream().toList();
     }
 
     /**
      * Get searchable values as a list of lowercase strings.
+     *
      * @param contact Contact
      * @return Collection of strings
      */
@@ -217,17 +183,18 @@ class FileContactDatabase implements IContactDatabase {
 
     /**
      * Query name, surname, street or phone.
+     *
      * @param property property name
-     * @param query query string
+     * @param query    query string
      * @return List of contacts.
      */
     @Override
-    public List<IContact> query(String property, String query) {
+    public List<IContact> queryByProperty(String property, String query) {
         Set<IContact> found = new HashSet<>(); // result set. guarantees no duplicates
         var lowercaseQuery = query.toLowerCase(); // assure lower case
         // query all contacts
-        for(var contact : data.contactList) {
-            if(property.equals("name") && contact.getName().toLowerCase().contains(lowercaseQuery)) {
+        for (var contact : wrapper.getContactList()) {
+            if (property.equals("name") && contact.getName().toLowerCase().contains(lowercaseQuery)) {
                 found.add(contact);
             } else if (property.equals("surname") && contact.getSurname().toLowerCase().contains(lowercaseQuery)) {
                 found.add(contact);

@@ -2,24 +2,45 @@ package yh.gulaboken.userdatabase;
 
 import yh.gulaboken.IUser;
 
+import javax.validation.constraints.NotNull;
 import java.security.MessageDigest;
 
 class User implements IUser {
     private final String username;
-    private String password;
     private final boolean isAdmin;
+    private final String passwordHash;
 
     /**
      * Constructor
      * Password is stored as its hash sum.
+     *
      * @param username
      * @param password
      * @param isAdmin
      */
-    User(String username, String password, boolean isAdmin) {
+    User(@NotNull String username, String password, boolean isAdmin) {
         this.username = username;
-        this.password = calculatePasswordHash(password);
+        this.passwordHash = calculatePasswordHash(password);
         this.isAdmin = isAdmin;
+    }
+
+    /**
+     * Calculate MD5 hash for the clear-text password.
+     *
+     * @param password Clear-text password
+     * @return MD5 hash for password or null
+     */
+    static String calculatePasswordHash(String password) {
+        if (password == null) {
+            password = "";
+        }
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(password.getBytes());
+            return new String(digest.digest());
+        } catch (Exception ex) {
+        }
+        return password;
     }
 
     @Override
@@ -29,25 +50,11 @@ class User implements IUser {
 
     @Override
     public String getPasswordHash() {
-        return password;
+        return passwordHash;
     }
 
     @Override
     public boolean isAdmin() {
         return isAdmin;
-    }
-
-    /**
-     * Calculate MD5 hash for the clear-text password.
-     * @param password Clear-text password
-     * @return MD5 hash for password
-     */
-    static String calculatePasswordHash(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(password.getBytes());
-            return new String(digest.digest());
-        } catch (Exception ex) {}
-        return password;
     }
 }
