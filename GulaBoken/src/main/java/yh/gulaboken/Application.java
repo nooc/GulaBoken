@@ -1,7 +1,8 @@
 package yh.gulaboken;
 
 import yh.gulaboken.filedatabase.FileContactDatabaseFactory;
-import yh.gulaboken.session.SessionFactory;
+import yh.gulaboken.menus.MainMenu;
+import yh.gulaboken.session.UserSessionFactory;
 import yh.gulaboken.userdatabase.HardcodedUserDatabaseFactory;
 import yh.gulaboken.utils.ConsoleLineReader;
 
@@ -11,7 +12,7 @@ public class Application implements IAppContext {
     private static final String FILE_DATABASE = "contacts.json";
     private final IUserDatabase userDatabase;
     private final IContactDatabase contactDatabase;
-    private final ISession session;
+    private final IUserSession session;
     private final ILineReader reader;
 
     /**
@@ -21,7 +22,7 @@ public class Application implements IAppContext {
     Application() {
         userDatabase = HardcodedUserDatabaseFactory.create();
         contactDatabase = FileContactDatabaseFactory.create(new File(FILE_DATABASE));
-        session = SessionFactory.create(userDatabase.getUser("guest"));
+        session = UserSessionFactory.create(userDatabase.getUser("guest"));
         reader = new ConsoleLineReader();
     }
 
@@ -33,11 +34,10 @@ public class Application implements IAppContext {
     public static void main(String[] args) {
         // create app instance
         var app = new Application();
-        // create menu handler instance.
-        // pass context to MenuHandler
-        var handler = new MenuHandler(app);
-        // run main menu
-        handler.mainMenu();
+        // create menu handler instance with app context
+        var mainMenu = new MainMenu(app);
+        // show main menu
+        mainMenu.show();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class Application implements IAppContext {
     }
 
     @Override
-    public ISession getSession() {
+    public IUserSession getSession() {
         return session;
     }
 
