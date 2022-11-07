@@ -31,13 +31,13 @@ The main menu looks has the following look:
 
 Searching it the data is performed as a case-insensitive sub-string search, ie. 'lo' will match 'HelLo'.
 
-#### freesearch
+#### free
 
-Free search takes one or more keywords and will return entries with any matching properties.
+Free search takes one or more keywords and will return entries matching all keywords.
 
 Example:
 
-    > freesearch be
+    > free be
     ----------------------------------------
     Yellow Book - Search Results
         Hello guest
@@ -50,6 +50,8 @@ Example:
     back
     ----------------------------------------
     >
+
+The above matches all contacts containing the keyword "be". If we made the search "free be jer" then only entry 107 would be returned as 103 and 105 do not contain "jer".
 
 #### search
 
@@ -66,11 +68,16 @@ Example:
     105: Bengt Bengtsson
         COMMANDS
     show ID
+    login USERNAME PASSWORD
     back
     ----------------------------------------
     >
 
+Login and logout
+
 #### add
+
+Add will 
 
 #### login
 
