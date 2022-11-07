@@ -1,19 +1,20 @@
 package yh.gulaboken.userdatabase;
 
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import yh.gulaboken.IUserDatabase;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test HardcodedUserDatabase
+ */
 public class HardcodedUserDatabaseTest {
 
     private static IUserDatabase database;
 
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         database = HardcodedUserDatabaseFactory.create();
     }
 

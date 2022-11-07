@@ -42,10 +42,12 @@ class FileContactDatabase implements IContactDatabase {
         // Create wrapper from json.
         try (FileReader fileReader = new FileReader(dataFile)) {
             this.wrapper = gson.fromJson(fileReader, DataWrapper.TYPE);
-        } catch (Exception e) {
-            // Create new, wrapper if read fails.
-            this.wrapper = new DataWrapper();
-        }
+            if (this.wrapper != null) {
+                return;
+            }
+        } catch (Exception e) { }
+        // Create new, wrapper if read fails.
+        this.wrapper = new DataWrapper();
     }
 
     @Override
@@ -129,9 +131,6 @@ class FileContactDatabase implements IContactDatabase {
         }
     }
 
-    /**
-     * See {@link IContactDatabase}
-     */
     @Override
     public List<IContact> queryByKeywords(Collection<String> keywords) {
         // result set
@@ -146,11 +145,11 @@ class FileContactDatabase implements IContactDatabase {
             // for all contacts...
             var haystack = getHaystack(contact);
             int foundCount = 0; // keys found
-            for (var key : keywordsArray) {
+            for (var keyword : keywordsArray) {
                 // for all keys...
                 for(var entry : haystack) {
                     // for all searchable values in a contact
-                    if (entry.contains(key)) {
+                    if (entry.contains(keyword)) {
                         // found key match
                         foundCount++;
                         break;
@@ -181,29 +180,22 @@ class FileContactDatabase implements IContactDatabase {
         );
     }
 
-    /**
-     * Query name, surname, street or phone.
-     *
-     * @param property property name
-     * @param query    query string
-     * @return List of contacts.
-     */
     @Override
     public List<IContact> queryByProperty(String property, String query) {
-        Set<IContact> found = new HashSet<>(); // result set. guarantees no duplicates
+        Set<IContact> foundContacts = new HashSet<>(); // result set. guarantees no duplicates
         var lowercaseQuery = query.toLowerCase(); // assure lower case
         // query all contacts
         for (var contact : wrapper.getContactList()) {
             if (property.equals("name") && contact.getName().toLowerCase().contains(lowercaseQuery)) {
-                found.add(contact);
+                foundContacts.add(contact);
             } else if (property.equals("surname") && contact.getSurname().toLowerCase().contains(lowercaseQuery)) {
-                found.add(contact);
+                foundContacts.add(contact);
             } else if (property.equals("street") && contact.getStreet().toLowerCase().contains(lowercaseQuery)) {
-                found.add(contact);
+                foundContacts.add(contact);
             } else if (property.equals("phone") && contact.getPhoneNumber().contains(lowercaseQuery)) {
-                found.add(contact);
+                foundContacts.add(contact);
             }
         }
-        return found.stream().toList();
+        return foundContacts.stream().toList();
     }
 }

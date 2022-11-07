@@ -31,7 +31,13 @@ public class Application implements IAppContext {
      * @param args
      */
     public static void main(String[] args) {
-        new MenuHandler(new Application()).mainMenu();
+        // create app instance
+        var app = new Application();
+        // create menu handler instance.
+        // pass context to MenuHandler
+        var handler = new MenuHandler(app);
+        // run main menu
+        handler.mainMenu();
     }
 
     @Override

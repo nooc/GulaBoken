@@ -10,6 +10,9 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test FileContactDatabase
+ */
 public class FileContactDatabaseTest {
     private static final String TEST_FILE = "test.json";
     private static IContactDatabase database;
@@ -19,7 +22,6 @@ public class FileContactDatabaseTest {
         var file = new File(TEST_FILE);
         if(file.exists()) {
             file.delete();
-            Thread.yield();
         }
         database = FileContactDatabaseFactory.create(file);
     }
@@ -84,10 +86,8 @@ public class FileContactDatabaseTest {
     public void query() {
         assertEquals(0, database.queryByProperty("name","foobar").size());
         assertEquals(1, database.queryByProperty("name","harry").size());
-        assertEquals(1, database.queryByProperty("name","harry").size());
 
         assertEquals(2, database.queryByKeywords(Arrays.asList("narrow")).size());
         assertEquals(1, database.queryByKeywords(Arrays.asList("narrow", "sam")).size());
-
     }
 }

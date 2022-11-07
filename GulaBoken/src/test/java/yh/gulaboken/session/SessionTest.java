@@ -1,12 +1,14 @@
 package yh.gulaboken.session;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import yh.gulaboken.ISession;
 import yh.gulaboken.IUser;
 import yh.gulaboken.userdatabase.HardcodedUserDatabaseFactory;
 
+/**
+ * Test Session
+ */
 import static org.junit.Assert.*;
 
 public class SessionTest {

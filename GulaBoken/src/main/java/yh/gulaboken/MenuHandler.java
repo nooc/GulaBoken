@@ -65,16 +65,7 @@ public class MenuHandler {
             } else if (command.equals("add")) {
                 editMenu(null);
             } else if (command.equals("login") && size == 3) {
-                // find authenticated user
-                var user = context.getUserDatabase()
-                        .authenticate(commandLine.get(INDEX_1), commandLine.get(INDEX_2));
-                if (user == null) {
-                    System.out.println("Login failed.");
-                    continue;
-                }
-                // set session user
-                session.setUser(user);
-                System.out.format("User %s logged in.\n", user.getUsername());
+                loginUser(commandLine.get(INDEX_1), commandLine.get(INDEX_2));
             } else if (command.equals("logout")) {
                 session.setUser(null);
             } else {
@@ -232,7 +223,7 @@ public class MenuHandler {
      */
     private void manageContactsMenu(List<IContact> contactsIn) {
         var reader = context.getLineReader();
-        var contacts = new ArrayList<IContact>(contactsIn);
+        var contacts = new ArrayList<>(contactsIn);
         if (contacts.isEmpty()) {
             // Nothing to do
             System.out.println("Nothing found.");
@@ -259,8 +250,8 @@ public class MenuHandler {
                     );
                 }
             } else {
-                // empty contacts -> break loop
-                break;
+                // empty contacts -> exit loop
+                return;
             }
             System.out.println("    COMMANDS");
             if (contacts.size() > 1) { // single contact is auto shown. hide in that case.
@@ -270,20 +261,24 @@ public class MenuHandler {
                 // show admin menu items
                 System.out.println("update ID");
                 System.out.println("delete ID");
+                System.out.println("logout");
+            } else {
+                System.out.println("login USERNAME PASSWORD");
             }
             System.out.print("""
                     back
                     ----------------------------------------
                     > """);
 
-            var commandLine = reader.getLine(SPLIT_IN_TWO); // read command and value
+            var commandLine = reader.getLine(); // read command and value
             var command = commandLine.get(INDEX_0);
-            long contactId;
+            var size = commandLine.size();
+            long contactId = 0;
 
             if (command.equals("back")) {
-                // break loop on back
-                break;
-            } else if (commandLine.size() == 2) {
+                // exit loop on back
+                return;
+            } else if (size == 2) {
                 // command has one value
                 try {
                     // value should be a number id
@@ -292,13 +287,9 @@ public class MenuHandler {
                     System.out.println(ex.getMessage());
                     continue;
                 }
-            } else {
-                // all commands except back take one argument
-                System.out.println("Invalid parameters.");
-                continue;
             }
 
-            if (command.equals("show")) {
+            if (command.equals("show") && contactId>0) {
                 // show contact with contactId
                 for (var contact : contacts) {
                     // search and show
@@ -306,30 +297,59 @@ public class MenuHandler {
                         printContact(contact);
                     }
                 }
-            } else if (context.getSession().getUser().isAdmin()) {
-                // update contact with contactId
-                if (command.equals("update")) {
-                    // search and edit
-                    for (var contact : contacts) {
-                        if (contact.getContactId() == contactId) {
-                            // edit contact
-                            editMenu(contact);
-                        }
-                    }
-                } else if (command.equals("delete")) {
-                    // delete contact with contactId
-                    for (var contact : contacts) {
-                        // search and remove
-                        if (contact.getContactId() == contactId) {
-                            contacts.remove(contact);
-                            context.getContactDatabase().delete(contactId);
-                            System.out.format("Removed contact %d.\n", contactId);
-                            break;
-                        }
+            } else if (command.equals("update") && contactId>0) {
+                if(!context.getSession().getUser().isAdmin()) {
+                    System.out.println("Please log in to update.");
+                    continue;
+                }
+                // search and edit
+                for (var contact : contacts) {
+                    if (contact.getContactId() == contactId) {
+                        // edit contact
+                        editMenu(contact);
                     }
                 }
+            } else if (command.equals("delete") && contactId>0) {
+                if(!context.getSession().getUser().isAdmin()) {
+                    System.out.println("Please log in to delete.");
+                    continue;
+                }
+                // delete contact with contactId
+                for (var contact : contacts) {
+                    // search and remove
+                    if (contact.getContactId() == contactId) {
+                        contacts.remove(contact);
+                        context.getContactDatabase().delete(contactId);
+                        System.out.format("Removed contact %d.\n", contactId);
+                        break;
+                    }
+                }
+            } else if (command.equals("login") && size == 3) {
+                loginUser(commandLine.get(INDEX_1), commandLine.get(INDEX_2));
+            } else if (command.equals("logout")) {
+                context.getSession().setUser(null);
             }
         }
+    }
+
+    /**
+     * Try logging in user with credentials.
+     *
+     * @param username Username
+     * @param password Password
+     * @return True if success, else false
+     */
+    private boolean loginUser(String username, String password) {
+        // find authenticated user
+        var user = context.getUserDatabase().authenticate(username, password);
+        if (user == null) {
+            System.out.println("Login failed.");
+            return false;
+        }
+        // set session user
+        context.getSession().setUser(user);
+        System.out.format("User %s logged in.\n", user.getUsername());
+        return true;
     }
 
     /**
