@@ -1,6 +1,7 @@
 package yh.gulaboken;
 
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 /**
  * Interface for contacts.
@@ -58,12 +59,12 @@ public interface IContact {
      * @return phone number(s)
      */
     @NotNull
-    String getPhoneNumber();
+    String getPhoneNumbers();
 
     /**
      * Set phone number
      */
-    void setPhoneNumber(String phoneNumber);
+    void setPhoneNumbers(String phoneNumbers);
 
     /**
      * Get street
@@ -116,4 +117,19 @@ public interface IContact {
      */
     @NotNull
     String getAddressLine();
+
+    /**
+     * Get contact properties as map.
+     *
+     * @return Key value map.
+     */
+    @NotNull
+    Map<String, String> asPropertiesMap();
+
+    /**
+     * Update properties from map.
+     *
+     * @param properties Properties source
+     */
+    void updateFromMap(Map<String, String> properties);
 }

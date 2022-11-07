@@ -25,7 +25,7 @@ public interface IAppContext {
      * @return session
      */
     @NotNull
-    ISession getSession();
+    IUserSession getSession();
 
     /**
      * Get command line reader.

@@ -1,14 +1,14 @@
 package yh.gulaboken.session;
 
-import yh.gulaboken.ISession;
 import yh.gulaboken.IUser;
+import yh.gulaboken.IUserSession;
 
 import javax.validation.constraints.NotNull;
 
 /**
  * Session implementation.
  */
-class Session implements ISession {
+class UserSession implements IUserSession {
 
     /**
      * Default user.
@@ -24,7 +24,7 @@ class Session implements ISession {
      * Constructor
      * Initialize defaultUser.
      */
-    Session(@NotNull IUser defaultUser) {
+    UserSession(@NotNull IUser defaultUser) {
         this.currentUser = this.defaultUser = defaultUser;
     }
 

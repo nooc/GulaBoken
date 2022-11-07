@@ -4,7 +4,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import yh.gulaboken.IUserDatabase;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test HardcodedUserDatabase
@@ -27,8 +28,8 @@ public class HardcodedUserDatabaseTest {
 
     @Test
     public void authenticate() {
-        assertNull("Should be null.", database.authenticate("admin",null));
-        assertNotNull("Should be non-null.", database.authenticate("guest",null));
-        assertNotNull("Should be non-null.", database.authenticate("admin","secret"));
+        assertNull("Should be null.", database.authenticate("admin", null));
+        assertNotNull("Should be non-null.", database.authenticate("guest", null));
+        assertNotNull("Should be non-null.", database.authenticate("admin", "secret"));
     }
 }

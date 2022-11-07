@@ -2,27 +2,24 @@ package yh.gulaboken.session;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import yh.gulaboken.ISession;
 import yh.gulaboken.IUser;
+import yh.gulaboken.IUserSession;
 import yh.gulaboken.userdatabase.HardcodedUserDatabaseFactory;
 
-/**
- * Test Session
- */
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class SessionTest {
 
     private static IUser admin;
     private static IUser guest;
-    private static ISession session;
+    private static IUserSession session;
 
     @BeforeClass
     public static void setUp() throws Exception {
         var userDatabase = HardcodedUserDatabaseFactory.create();
         admin = userDatabase.getUser("admin");
         guest = userDatabase.getUser("guest");
-        session = SessionFactory.create(guest);
+        session = UserSessionFactory.create(guest);
     }
 
     @Test

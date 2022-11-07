@@ -4,6 +4,8 @@ import yh.gulaboken.IContact;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Implements IContact interface.
@@ -32,7 +34,7 @@ class Contact implements IContact {
     /**
      * one or more comma separated phone numbers
      */
-    private String phoneNumber;
+    private String phoneNumbers;
     /**
      * street name and number
      */
@@ -57,21 +59,21 @@ class Contact implements IContact {
         this.name = EMPTY_STRING;
         this.surname = EMPTY_STRING;
         this.age = EMPTY_STRING;
-        this.phoneNumber = EMPTY_STRING;
+        this.phoneNumbers = EMPTY_STRING;
         this.street = EMPTY_STRING;
         this.city = EMPTY_STRING;
         this.zipCode = EMPTY_STRING;
     }
 
     /**
-     * Make sure value is non-null.
+     * Make sure value is non-null and trimmed.
      *
      * @param value Input value.
      * @return Input value if not null, else empty string.
      */
     @NotNull
     protected String nonNull(String value) {
-        return value == null ? EMPTY_STRING : value;
+        return value == null ? EMPTY_STRING : value.trim();
     }
 
     @Override
@@ -110,13 +112,13 @@ class Contact implements IContact {
     }
 
     @Override
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhoneNumbers() {
+        return phoneNumbers;
     }
 
     @Override
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = nonNull(phoneNumber);
+    public void setPhoneNumbers(String phoneNumbers) {
+        this.phoneNumbers = nonNull(phoneNumbers);
     }
 
     @Override
@@ -168,5 +170,59 @@ class Contact implements IContact {
         }
 
         return String.join(COMMA_DELIMITER, addressItems);
+    }
+
+    @Override
+    public Map<String, String> asPropertiesMap() {
+        var properties = new HashMap<String, String>();
+        // put properties into map
+        if (!name.isEmpty()) {
+            properties.put("name", name);
+        }
+        if (!surname.isEmpty()) {
+            properties.put("surname", surname);
+        }
+        if (!age.isEmpty()) {
+            properties.put("age", age);
+        }
+        if (!phoneNumbers.isEmpty()) {
+            properties.put("phone", phoneNumbers);
+        }
+        if (!street.isEmpty()) {
+            properties.put("street", street);
+        }
+        if (!city.isEmpty()) {
+            properties.put("city", city);
+        }
+        if (!zipCode.isEmpty()) {
+            properties.put("zip", zipCode);
+        }
+        return properties;
+    }
+
+    @Override
+    public void updateFromMap(Map<String, String> properties) {
+        // put properties into map
+        if (properties.containsKey("name")) {
+            name = properties.get("name");
+        }
+        if (properties.containsKey("surname")) {
+            surname = properties.get("surname");
+        }
+        if (properties.containsKey("age")) {
+            age = properties.get("age");
+        }
+        if (properties.containsKey("phone")) {
+            phoneNumbers = properties.get("phone");
+        }
+        if (properties.containsKey("street")) {
+            street = properties.get("street");
+        }
+        if (properties.containsKey("city")) {
+            city = properties.get("city");
+        }
+        if (properties.containsKey("zip")) {
+            zipCode = properties.get("zip");
+        }
     }
 }

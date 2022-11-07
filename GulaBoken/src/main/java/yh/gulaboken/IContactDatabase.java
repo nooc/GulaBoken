@@ -35,6 +35,16 @@ public interface IContactDatabase {
     boolean update(IContact contact);
 
     /**
+     * Update a contact.
+     * Contact is persisted to file.
+     *
+     * @param id         Contact id
+     * @param properties Properties to set for contact.
+     * @return True if updated, else false.
+     */
+    boolean update(long id, Map<String, String> properties);
+
+    /**
      * Delete contact with matching id.
      *
      * @param id Contact id

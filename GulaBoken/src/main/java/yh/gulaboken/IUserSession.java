@@ -2,7 +2,7 @@ package yh.gulaboken;
 
 import javax.validation.constraints.NotNull;
 
-public interface ISession {
+public interface IUserSession {
 
     /**
      * Get current user.

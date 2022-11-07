@@ -45,7 +45,8 @@ class FileContactDatabase implements IContactDatabase {
             if (this.wrapper != null) {
                 return;
             }
-        } catch (Exception e) { }
+        } catch (Exception e) {
+        }
         // Create new, wrapper if read fails.
         this.wrapper = new DataWrapper();
     }
@@ -61,7 +62,7 @@ class FileContactDatabase implements IContactDatabase {
             contact.setName(properties.get("name"));
             contact.setSurname(properties.get("surname"));
             contact.setAge(properties.get("age"));
-            contact.setPhoneNumber(properties.get("phone"));
+            contact.setPhoneNumbers(properties.get("phone"));
             contact.setStreet(properties.get("street"));
             contact.setCity(properties.get("city"));
             contact.setZipCode(properties.get("zip"));
@@ -85,22 +86,22 @@ class FileContactDatabase implements IContactDatabase {
 
     @Override
     public boolean update(IContact contact) {
-        // find db contact
-        var dBContact = read(contact.getContactId());
+        if (contact != null && wrapper.getContactList().contains(contact)) {
+            return writeToFile();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean update(long id, Map<String, String> properties) {
+        var dBContact = read(id);
         if (dBContact == null) {
             // not found
             return false;
         }
         // found -> update
-        dBContact.setName(contact.getName());
-        dBContact.setSurname(contact.getSurname());
-        dBContact.setAge(contact.getAge());
-        dBContact.setPhoneNumber(contact.getPhoneNumber());
-        dBContact.setStreet(contact.getStreet());
-        dBContact.setCity(contact.getCity());
-        dBContact.setZipCode(contact.getZipCode());
-        writeToFile();
-        return true;
+        dBContact.updateFromMap(properties);
+        return writeToFile();
     }
 
     /**
@@ -122,13 +123,15 @@ class FileContactDatabase implements IContactDatabase {
     /**
      * Persist data to json file.
      */
-    private void writeToFile() {
+    private boolean writeToFile() {
         try (FileWriter fileWriter = new FileWriter(dataFile)) {
             // write json
             gson.toJson(wrapper, DataWrapper.TYPE, fileWriter);
+            return true;
         } catch (Exception e) {
-            System.out.println("Error. Didn't write to file :(");
+            System.out.println("Write to file failed.");
         }
+        return false;
     }
 
     @Override
@@ -147,7 +150,7 @@ class FileContactDatabase implements IContactDatabase {
             int foundCount = 0; // keys found
             for (var keyword : keywordsArray) {
                 // for all keys...
-                for(var entry : haystack) {
+                for (var entry : haystack) {
                     // for all searchable values in a contact
                     if (entry.contains(keyword)) {
                         // found key match
@@ -156,7 +159,7 @@ class FileContactDatabase implements IContactDatabase {
                     }
                 }
             }
-            if(foundCount == keywordsArray.length) {
+            if (foundCount == keywordsArray.length) {
                 // all keys found
                 foundContacts.add(contact);
             }
@@ -175,7 +178,7 @@ class FileContactDatabase implements IContactDatabase {
                 contact.getName().toLowerCase(),
                 contact.getSurname().toLowerCase(),
                 contact.getAge(),
-                contact.getPhoneNumber(),
+                contact.getPhoneNumbers(),
                 contact.getAddressLine().toLowerCase()
         );
     }
@@ -192,7 +195,7 @@ class FileContactDatabase implements IContactDatabase {
                 foundContacts.add(contact);
             } else if (property.equals("street") && contact.getStreet().toLowerCase().contains(lowercaseQuery)) {
                 foundContacts.add(contact);
-            } else if (property.equals("phone") && contact.getPhoneNumber().contains(lowercaseQuery)) {
+            } else if (property.equals("phone") && contact.getPhoneNumbers().contains(lowercaseQuery)) {
                 foundContacts.add(contact);
             }
         }
