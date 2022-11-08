@@ -9,22 +9,28 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Enter edit menu.
+ * A menu for editing new or existing contact.
+ */
 public class EditMenu extends BaseMenu {
     private static final List<String> ADDABLE_ITEMS = new ArrayList<>(Arrays.asList(
             "name", "surname", "age", "phone", "street", "city", "zip"
     ));
-
-    public EditMenu(IAppContext context) {
-        super(context);
-    }
+    private final IContact contact;
 
     /**
-     * Enter edit menu.
-     * A menu for editing new or existing contact.
-     *
-     * @param contact Contact or null
+     * Constructor
+     * @param context App context
+     * @param contact Contact instance or null
      */
-    public void show(IContact contact) {
+    public EditMenu(IAppContext context, IContact contact) {
+        super(context);
+        this.contact = contact;
+    }
+
+    @Override
+    public void show() {
         var reader = context.getLineReader();
         var contactProperties =
                 contact == null ? new HashMap<String, String>() : contact.asPropertiesMap();

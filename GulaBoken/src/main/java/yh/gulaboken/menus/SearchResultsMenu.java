@@ -6,26 +6,27 @@ import yh.gulaboken.IContact;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Manage set of provided contacts.
+ * Show, update or delete provided contacts.
+ */
 public class SearchResultsMenu extends BaseMenu {
+    /** Contacts to manage. */
+    private final List<IContact> contacts;
 
     /**
      * Constructor
      *
      * @param context Application context
      */
-    protected SearchResultsMenu(IAppContext context) {
+    protected SearchResultsMenu(IAppContext context, List<IContact> contacts) {
         super(context);
+        this.contacts = new ArrayList<>(contacts);
     }
 
-    /**
-     * Manage set of provided contacts.
-     * Show, update or delete provided contacts.
-     *
-     * @param contactsIn List of contacts
-     */
-    public void show(List<IContact> contactsIn) {
+    @Override
+    public void show() {
         var reader = context.getLineReader();
-        var contacts = new ArrayList<>(contactsIn);
         if (contacts.isEmpty()) {
             // Nothing to do
             System.out.println("Nothing found.");
@@ -104,8 +105,7 @@ public class SearchResultsMenu extends BaseMenu {
                 // search and edit
                 for (var contact : contacts) {
                     if (contact.getContactId() == contactId) {
-                        // edit contact
-                        new EditMenu(context).show(contact);
+                        new EditMenu(context, contact).show();
                     }
                 }
             } else if (command.equals("delete") && contactId > 0) {

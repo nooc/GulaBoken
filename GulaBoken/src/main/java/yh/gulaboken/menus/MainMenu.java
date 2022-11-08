@@ -4,15 +4,16 @@ import yh.gulaboken.IAppContext;
 
 import java.util.List;
 
+/**
+ * Main menu.
+ */
 public class MainMenu extends BaseMenu {
 
     public MainMenu(IAppContext context) {
         super(context);
     }
 
-    /**
-     * Enter main menu.
-     */
+    @Override
     public void show() {
         var session = context.getSession();
         var reader = context.getLineReader();
@@ -48,7 +49,7 @@ public class MainMenu extends BaseMenu {
             } else if (command.equals("search") && size == 3) {
                 search(commandLine.get(INDEX_1), commandLine.get(INDEX_2));
             } else if (command.equals("add")) {
-                new EditMenu(context).show(null);
+                new EditMenu(context, null).show();
             } else if (command.equals("login") && size == 3) {
                 loginUser(commandLine.get(INDEX_1), commandLine.get(INDEX_2));
             } else if (command.equals("logout")) {
@@ -69,7 +70,7 @@ public class MainMenu extends BaseMenu {
         // Get database from context and query for contacts.
         var contacts = context.getContactDatabase().queryByProperty(property, needle);
         // Handle results.
-        new SearchResultsMenu(context).show(contacts);
+        new SearchResultsMenu(context, contacts).show();
     }
 
     /**
@@ -81,7 +82,7 @@ public class MainMenu extends BaseMenu {
         // Get database from context and query for contacts.
         var contacts = context.getContactDatabase().queryByKeywords(keywords);
         // Handle results.
-        new SearchResultsMenu(context).show(contacts);
+        new SearchResultsMenu(context, contacts).show();
     }
 
 

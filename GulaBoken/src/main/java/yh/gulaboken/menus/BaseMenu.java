@@ -1,8 +1,9 @@
 package yh.gulaboken.menus;
 
 import yh.gulaboken.IAppContext;
+import yh.gulaboken.IMenu;
 
-public abstract class BaseMenu {
+public abstract class BaseMenu implements IMenu {
     protected static final int SPLIT_IN_TWO = 2;
     protected static final int INDEX_0 = 0;
     protected static final int INDEX_1 = 1;
@@ -17,6 +18,8 @@ public abstract class BaseMenu {
     protected BaseMenu(IAppContext context) {
         this.context = context;
     }
+
+    public abstract void show();
 
     /**
      * Try logging in user with credentials.
