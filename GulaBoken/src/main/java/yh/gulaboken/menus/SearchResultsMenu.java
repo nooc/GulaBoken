@@ -150,10 +150,11 @@ public class SearchResultsMenu extends BaseMenu {
                 contact.getSurname(),
                 contact.getPhoneNumbers());
         if (!age.isEmpty()) {
-            System.out.format("    Age: %s\n");
+            System.out.format("    Age: %s\n", contact.getAge());
         }
         if (!addressStr.isEmpty()) {
             System.out.format("Address: %s\n", addressStr);
         }
+        System.out.println("----------------------------------------");
     }
 }
