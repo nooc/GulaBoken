@@ -1,55 +1,51 @@
 package yh.gulaboken;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import yh.gulaboken.filedatabase.FileContactDatabaseFactory;
-import yh.gulaboken.session.UserSessionFactory;
-import yh.gulaboken.userdatabase.HardcodedUserDatabaseFactory;
-import yh.gulaboken.utils.ConsoleLineReader;
+import yh.gulaboken.menus.MainMenu;
 
 import java.io.File;
-
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicationTest {
+    private static final String[] COMMAND_SIMULATION = {
+            "free hello",
+            "add",
+            "name Test",
+            "surname User",
+            "phone +461234567, 0313303030",
+            "street Test Street 4",
+            "apply",
+            "free user",
+            "update 101",
+            "login admin secret",
+            "update 101",
+            "city Hometown",
+            "zip 4345",
+            "zip 34565",
+            "apply",
+            "back",
+            "search name test",
+            "back",
+            "quit"
+    };
 
-    class TestApplication implements IAppContext {
+    private static final String TEST_FILE = "test.json";
 
-        IUserDatabase uData;
-        IContactDatabase cData;
-        IUserSession session;
-        ILineReader reader;
-
-        TestApplication() {
-            uData = HardcodedUserDatabaseFactory.create();
-            cData = FileContactDatabaseFactory.create(new File("test.json"));
-            session = UserSessionFactory.create(uData.getUser("guest"));
-            reader = new ConsoleLineReader();
-        }
-
-        @Override
-        public IContactDatabase getContactDatabase() {
-            return null;
-        }
-
-        @Override
-        public IUserDatabase getUserDatabase() {
-            return null;
-        }
-
-        @Override
-        public IUserSession getSession() {
-            return null;
-        }
-
-        @Override
-        public ILineReader getLineReader() {
-            return null;
+    @BeforeClass
+    public static void loadDatabase() {
+        var file = new File(TEST_FILE);
+        if (file.exists()) {
+            file.delete();
         }
     }
 
     @Test
     public void main() {
-
-
+        var app = new TestApplication(COMMAND_SIMULATION);
+        var menu = new MainMenu(app);
+        menu.show();
     }
 }
