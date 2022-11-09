@@ -147,19 +147,19 @@ class FileContactDatabase implements IContactDatabase {
         for (var contact : wrapper.getContactList()) {
             // for all contacts...
             var haystack = getHaystack(contact);
-            int foundCount = 0; // keys found
+            int keywordsFound = 0; // keys found
             for (var keyword : keywordsArray) {
                 // for all keys...
                 for (var entry : haystack) {
                     // for all searchable values in a contact
                     if (entry.contains(keyword)) {
                         // found key match
-                        foundCount++;
+                        keywordsFound++;
                         break;
                     }
                 }
             }
-            if (foundCount == keywordsArray.length) {
+            if (keywordsFound == keywordsArray.length) {
                 // all keys found
                 foundContacts.add(contact);
             }
