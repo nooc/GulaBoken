@@ -137,7 +137,7 @@ class FileContactDatabase implements IContactDatabase {
     @Override
     public List<IContact> queryByKeywords(Collection<String> keywords) {
         // result set
-        Set<IContact> foundContacts = new HashSet<>();
+        List<IContact> foundContacts = new LinkedList<>();
         // make lowercase
         var keywordsArray = keywords.toArray(new String[keywords.size()]);
         for (int i = 0; i < keywordsArray.length; ++i) {
@@ -164,7 +164,7 @@ class FileContactDatabase implements IContactDatabase {
                 foundContacts.add(contact);
             }
         }
-        return foundContacts.stream().toList();
+        return foundContacts;
     }
 
     /**
@@ -185,8 +185,10 @@ class FileContactDatabase implements IContactDatabase {
 
     @Override
     public List<IContact> queryByProperty(String property, String query) {
-        Set<IContact> foundContacts = new HashSet<>(); // result set. guarantees no duplicates
-        var lowercaseQuery = query.toLowerCase(); // assure lower case
+        // result set
+        List<IContact> foundContacts = new LinkedList<>();
+        // assure lower case
+        var lowercaseQuery = query.toLowerCase();
         // query all contacts
         for (var contact : wrapper.getContactList()) {
             if (property.equals("name") && contact.getName().toLowerCase().contains(lowercaseQuery)) {
@@ -199,6 +201,6 @@ class FileContactDatabase implements IContactDatabase {
                 foundContacts.add(contact);
             }
         }
-        return foundContacts.stream().toList();
+        return foundContacts;
     }
 }
