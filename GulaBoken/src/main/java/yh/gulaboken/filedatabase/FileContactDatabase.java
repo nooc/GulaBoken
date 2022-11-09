@@ -150,9 +150,9 @@ class FileContactDatabase implements IContactDatabase {
             int keywordsFound = 0; // keys found
             for (var keyword : keywordsArray) {
                 // for all keys...
-                for (var entry : haystack) {
+                for (var propertyValue : haystack) {
                     // for all searchable values in a contact
-                    if (entry.contains(keyword)) {
+                    if (propertyValue.contains(keyword)) {
                         // found key match
                         keywordsFound++;
                         break;
