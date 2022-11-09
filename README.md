@@ -51,7 +51,7 @@ Example:
     ----------------------------------------
     >
 
-The above matches all contacts containing the keyword "be". If we made the search "free be jer" then only entry 107 would be returned as 103 and 105 do not contain "jer".
+The above matches all contacts containing the keyword 'be'. If we made the search **free be jer** then only entry 107 would be returned as 103 and 105 do not contain 'jer'.
 
 #### search
 
@@ -75,9 +75,41 @@ Example:
 
 Login and logout
 
-#### add
+#### add / update
 
-Add will 
+Add and update will begin an edit on a new or existing contact. By using the different property commands you can add or update properties. Use the **clear** command to clear an existing property.
+
+When done editing, use **apply** to actualise the edit and return to the previous menu.
+
+A contact must have a minimum of **name**, **surname** and **phone**.
+
+Example:
+
+    > add
+    ----------------------------------------
+    Yellow Book - Create Contact
+        Hello guest
+    ----------------------------------------
+        COMMANDS
+    name VALUE      - Name.
+    surname VALUE   - Surname.
+    age VALUE       - Age 0-130.
+    phone VALUE     - Comma separated list of phone numbers.
+    street VALUE    - Street name and number.
+    city VALUE      - City name.
+    zip VALUE       - Zip code of 5 digits.
+    clear PROPERTY  - Clear the property value.
+    apply
+    cancel
+    ----------------------------------------
+    > name John
+    
+    ...
+    
+    ----------------------------------------
+    name = John
+    ----------------------------------------
+    > 
 
 #### login
 
@@ -99,7 +131,7 @@ Example:
     ...
 
     ----------------------------------------
-    > freesearch beng
+    > free beng
     ----------------------------------------
     Yellow Book - Search Results
         Hello admin
