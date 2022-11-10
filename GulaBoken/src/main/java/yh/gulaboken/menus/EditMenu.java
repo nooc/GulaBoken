@@ -105,7 +105,7 @@ public class EditMenu extends BaseMenu {
                 return;
             } else if (command.equals("clear") && commandLine.size() == 2) {
                 // clear key/value from properties map
-                var key = commandLine.get(1).toLowerCase();
+                var key = commandLine.get(INDEX_1).toLowerCase();
                 if (ADDABLE_ITEMS.contains(key)
                         && contactProperties.containsKey(key)) {
                     contactProperties.replace(key, "");
@@ -125,13 +125,13 @@ public class EditMenu extends BaseMenu {
                     commandLine.set(INDEX_1, String.join(", ", numbersArray));
 
                 } else if (command.equals("zip")
-                        && !StringValidator.validateZipcode(commandLine.get(1))) {
+                        && !StringValidator.validateZipcode(commandLine.get(INDEX_1))) {
                     // validate zip
                     System.out.println("Invalid zip code.");
                     continue;
                 }
                 // command has value -> add/replace in map
-                contactProperties.put(command, commandLine.get(1));
+                contactProperties.put(command, commandLine.get(INDEX_1));
             } else {
                 System.out.println("Invalid input.");
             }
